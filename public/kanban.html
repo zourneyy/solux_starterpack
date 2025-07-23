@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>투두 칸반 보드</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header><h1>칸반 보드</h1></header>
+  <main>
+    <div id="filterSection"></div> <!-- 필터, 우선순위 선택 -->
+    <div class="kanban-board">
+      <section id="todoColumn"></section>
+      <section id="doingColumn"></section>
+      <section id="doneColumn"></section>
+    </div>
+    <div id="addCardModal" style="display:none;"></div> <!-- 카드 추가 모달 -->
+  </main>
+  <footer id="fixedBar"></footer>
+  <script src="../src/main.js"></script>
+  <script src="../src/kanban.js"></script>
+  <script src="../src/fixedbar.js"></script>
+</body>
+</html>
