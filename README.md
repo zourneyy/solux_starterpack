@@ -1,6 +1,6 @@
-## solux_starterpack ##
+# solux_starterpack
 
-# 기능 흐름도
+## 기능 흐름도 ##
 [START]
 ▼
 [로그인 페이지]
