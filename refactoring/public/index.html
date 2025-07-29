@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>투두리스트 프로그램</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 상단 메뉴바 -->
+  <header>
+    <h1 class="logo">TODOLIST</h1>
+    <input type="text" id="searchInput" placeholder="프로젝트 / 카드 검색..." />
+    <nav>
+      <ul class="menu">
+        <li data-section="calendar" class="active">달력</li>
+        <li data-section="todo">TODO</li>
+        <li data-section="doing">DOING</li>
+        <li data-section="done">DONE</li>
+        <li data-section="dashboard">대시보드</li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 검색 결과 -->
+  <section id="searchResults" class="page-section" style="display: none;">
+    <h2>검색 결과</h2>
+    <div id="searchContainer"></div>
+  </section>
+
+  <!-- 달력 -->
+  <section id="calendar" class="page-section active">
+    <div class="calendar-header">
+      <button id="prevMonthBtn" class="arrow-btn">&lt;</button>
+      <h2 id="calendarTitle"></h2>
+      <button id="nextMonthBtn" class="arrow-btn">&gt;</button>
+    </div>
+    <div class="calendar-layout">
+      <div id="calendarContainer"></div>
+      <div class="calendar-side">
+        <h3 id="selectedDateTitle">날짜를 선택하세요</h3>
+        <button id="addDeadlineBtn">마감 업무 +</button>
+        <ul id="deadlineList"></ul>
+        <button id="addTaskBtn">할 일 +</button>
+        <ul id="taskListForDate"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TODO -->
+  <section id="todo" class="page-section kanban-page">
+    <div class="day-nav">
+      <button class="prevDayBtn">&lt;</button>
+      <h2 id="todoDayLabel"></h2>
+      <button class="nextDayBtn">&gt;</button>
+    </div>
+    <div class="kanban-board">
+      <div class="kanban-column" data-status="todo"></div>
+      <div class="next-stage-dropzone" data-next="doing">▶</div>
+    </div>
+  </section>
+
+  <!-- DOING -->
+  <section id="doing" class="page-section kanban-page">
+    <div class="day-nav">
+      <button class="prevDayBtn">&lt;</button>
+      <h2 id="doingDayLabel"></h2>
+      <button class="nextDayBtn">&gt;</button>
+    </div>
+    <div class="kanban-board">
+      <div class="kanban-column" data-status="doing"></div>
+      <div class="next-stage-dropzone" data-next="done">▶</div>
+    </div>
+  </section>
+
+  <!-- DONE -->
+  <section id="done" class="page-section">
+    <div class="day-nav">
+      <button class="prevDayBtn">&lt;</button>
+      <h2 id="doneDayLabel"></h2>
+      <button class="nextDayBtn">&gt;</button>
+    </div>
+    <div class="kanban-column" data-status="done"></div>
+  </section>
+
+  <!-- 대시보드 -->
+  <section id="dashboard" class="page-section">
+    <div class="day-nav">
+      <button class="prevDayBtn">&lt;</button>
+      <h2 id="doneDayLabel"></h2>
+      <button class="nextDayBtn">&gt;</button>
+    </div>
+
+    <div class="dashboard-container">
+      <header class="dashboard-header">
+        <h2>메인 대시보드</h2>
+        <p>프로젝트의 전체 현황을 한눈에 확인하세요.</p>
+      </header>
+
+      <div class="info-grid">
+        <!-- 진행률 -->
+        <div class="info-card">
+          <h3>전체 진행률</h3>
+          <div class="progress-bar">
+            <div class="progress" id="progressValue"></div>
+          </div>
+          <span id="progressPercent" class="info-value">0%</span>
+        </div>
+
+        <!-- 총 업무 수 -->
+        <div class="info-card">
+          <h3>총 업무 수</h3>
+          <span id="totalTasks" class="info-value">0</span>
+        </div>
+
+        <!-- 촉박 일정 -->
+        <div class="info-card urgent-card">
+          <h3>촉박 일정 (3일 이내)</h3>
+          <ul id="urgentList">
+            <li>없음</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 촉박 일정 알림 팝업 -->
+    <div id="alertPopup" class="popup" style="display: none;">
+      <div class="popup-content">
+        <span class="popup-icon">⚠️</span>
+        <p>마감일이 임박한 업무가 있습니다!</p>
+        <button id="alertCloseBtn">확인</button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 하단 상태바 -->
+<footer id="statusBar">
+  <div class="status-bar-content">
+    <div class="status-item">
+      <strong>진행률:</strong>
+      <span id="fixedProgress">0%</span>
+    </div>
+    <div class="status-item">
+      <strong>업무 수:</strong>
+      <span id="fixedTaskCount">0</span>
+    </div>
+    <div class="status-item">
+      <strong>촉박 일정:</strong>
+      <span id="fixedUrgent">없음</span>
+    </div>
+  </div>
+  <div class="footer-progress-bar">
+    <div id="footerProgress" class="footer-progress-fill"></div>
+  </div>
+</footer>
+
+
+  <script type="module" src="../src/main.js"></script>
+</body>
+</html>
