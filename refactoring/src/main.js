@@ -4,6 +4,7 @@ import { setupFooterInteraction } from './fixedbar.js'; // 하단 바 기능 가
 import { setupNavigation } from './navigation.js'; // 네비게이션 기능 가져오기
 import { renderCalendar, setupCalendarControls } from './calendar.js'; // 달력 기능 가져오기
 import { formatDate } from './utils.js'; // 유틸 함수 가져오기
+import { setupSearch } from './search.js'; // 검색 기능 가져오기
 // import { renderKanban } from './kanban.js'; // 다른 기능도 이 형식으로 가져오기
 
 // 2. 모든 팀원이 공유할 데이터
@@ -41,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupFooterInteraction(); // 하단 바 클릭 이벤트 설정
   setupNavigation(tasks); // 네비게이션 설정 함수 실행
   setupCalendarControls(handleMonthChange); // 달력 버튼 이벤트 설정
+  setupSearch(tasks); // DOMContentLoaded에서 실행
 });
 
 /*
