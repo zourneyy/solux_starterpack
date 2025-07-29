@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>투두리스트 프로그램</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 상단 메뉴바 -->
+  <header>
+    <h1 class="logo">TODOLIST</h1>
+    <input type="text" id="searchInput" placeholder="프로젝트 / 카드 검색..." />
+    <nav>
+      <ul class="menu">
+        <li data-section="calendar" class="active">달력</li>
+        <li data-section="todo">TODO</li>
+        <li data-section="doing">DOING</li>
+        <li data-section="done">DONE</li>
+        <li data-section="dashboard">대시보드</li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 검색 결과 -->
+  <section id="searchResults" class="page-section" style="display: none;">
+    <h2>검색 결과</h2>
+    <div id="searchContainer"></div>
+  </section>
+
+  <!-- 달력 -->
+  <section id="calendar" class="page-section active">
+    <div class="calendar-header">
+      <button id="prevMonthBtn" class="arrow-btn">&lt;</button>
+      <h2 id="calendarTitle"></h2>
+      <button id="nextMonthBtn" class="arrow-btn">&gt;</button>
+    </div>
+    <div class="calendar-layout">
+      <div id="calendarContainer"></div>
+      <div class="calendar-side">
+        <h3 id="selectedDateTitle">날짜를 선택하세요</h3>
+        <button id="addDeadlineBtn">마감 업무 +</button>
+        <ul id="deadlineList"></ul>
+        <button id="addTaskBtn">할 일 +</button>
+        <ul id="taskListForDate"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TODO -->
+  <section id="todo" class="page-section kanban-page">
+    <div class="day-nav">
+      <button class="prevDayBtn">&lt;</button>
+      <h2 id="todoDayLabel"></h2>
+      <button class="nextDayBtn">&gt;</button>
+    </div>
+    <div class="kanban-board">
+      <div class="kanban-column" data-status="todo"></div>
+      <div class="next-stage-dropzone" data-next="doing">▶</div>
+    </div>
+  </section>
+
+  <!-- DOING -->
+  <section id="doing" class="page-section kanban-page">
+    <div class="day-nav">
+      <button class="prevDayBtn">&lt;</button>
+      <h2 id="doingDayLabel"></h2>
+      <button class="nextDayBtn">&gt;</button>
+    </div>
+    <div class="kanban-board">
+      <div class="prev-stage-dropzone" data-prev="todo">◀</div>
+      <div class="kanban-column" data-status="doing"></div>
+      <div class="next-stage-dropzone" data-next="done">▶</div>
+    </div>
+  </section>
+
+  <!-- DONE -->
+  <section id="done" class="page-section kanban-page">
+    <div class="day-nav">
+      <button class="prevDayBtn">&lt;</button>
+      <h2 id="doneDayLabel"></h2>
+      <button class="nextDayBtn">&gt;</button>
+    </div>
+    <div class="kanban-board">
+    <div class="prev-stage-dropzone" data-prev="doing">◀</div>
+    <div class="kanban-column" data-status="done"></div>
+    </div>
+  </section>
+
+
+  <!-- 대시보드 -->
+  <section id="dashboard" class="page-section">
+    <div class="day-nav">
+      <button class="prevDayBtn">&lt;</button>
+      <h2 id="dashboardDayLabel"></h2>
+      <button class="nextDayBtn">&gt;</button>
+    </div>
+    <div class="dashboard-box">
+      <div>
+        <h3>마감 임박 일정</h3>
+        <ul id="upcomingDeadlines"></ul>
+      </div>
+      <div>
+        <h3>업무 유형별 분포</h3>
+        <div id="taskTypes"></div>
+      </div>
+      <div>
+        <h3>전체 진행률</h3>
+        <div class="progress-bar">
+          <div id="dashboardProgress" class="progress-fill">0%</div>
+        </div>
+      </div>
+      <div>
+        <h3>남은 업무 수</h3>
+        <div id="remainingTasks"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 하단 상태바 -->
+  <footer id="statusBar">
+    <span id="progressInfo">진행 상황: 0%</span>
+    <div class="footer-progress-bar">
+      <div id="footerProgress" class="footer-progress-fill"></div>
+    </div>
+  </footer>
+
+<!-- 떠다니는 카드 추가 버튼 -->
+<button id="addCardBtn" class="floating-add-btn">+</button>
+
+<!-- 카드 추가 모달 -->
+<div id="addCardModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>카드 추가</h3>
+    <label>제목 <input type="text" id="cardTitleInput" /></label>
+    <label>내용 <textarea id="cardDetailInput"></textarea></label>
+    <label>상태 
+      <select id="cardStatusSelect">
+        <option value="todo">TODO</option>
+        <option value="doing">DOING</option>
+        <option value="done">DONE</option>
+      </select>
+    </label>
+    <label>업무유형
+      <select id="cardTypeSelect">
+        <option value="일반">일반</option>
+        <option value="중요">중요</option>
+        <option value="긴급">긴급</option>
+      </select>
+    </label>
+    <button id="createCardBtn">추가</button>
+    <button id="cancelCardBtn">취소</button>
+  </div>
+</div>
+
+<!-- 휴지통 영역 -->
+<div id="trashZone" class="trash-zone hidden">🗑️</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
