@@ -2,7 +2,8 @@
 import { saveAndRender } from './main.js';
 
 let tasks = [
-
+  { id: 1, title: "테스트 마감 임박 업무", type: "테스트", date: "2025-08-01", status: "TODO", deadline: true, dueDate: "2025-08-02" },
+  // ... 나머지 데이터
 ];
 let selectedDate = "";
 
