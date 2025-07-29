@@ -83,58 +83,53 @@
     <div class="kanban-column" data-status="done"></div>
   </section>
 
-  <!-- 대시보드 -->
-  <section id="dashboard" class="page-section">
-    <div class="day-nav">
-      <button class="prevDayBtn">&lt;</button>
-      <h2 id="doneDayLabel"></h2>
-      <button class="nextDayBtn">&gt;</button>
+<!-- 대시보드 -->
+<section id="dashboard" class="page-section">
+  <!-- 날짜 네비게이션 -->
+  <div class="day-nav">
+    <button class="prevDayBtn">&lt;</button>
+    <h2 id="dashboardDayLabel"></h2>
+    <button class="nextDayBtn">&gt;</button>
+  </div>
+
+  <!-- 대시보드 카드 그리드 -->
+  <div class="dashboard-grid">
+    <!-- 마감 임박 일정 -->
+    <div class="dashboard-card" id="upcoming-deadlines-card">
+      <h3>마감 임박 일정</h3>
+      <ul id="upcomingDeadlinesList">
+        <!-- JS가 여기에 내용 채울 예정 -->
+      </ul>
     </div>
 
-    <div class="dashboard-container">
-      <header class="dashboard-header">
-        <h2>메인 대시보드</h2>
-        <p>프로젝트의 전체 현황을 한눈에 확인하세요.</p>
-      </header>
-
-      <div class="info-grid">
-        <!-- 진행률 -->
-        <div class="info-card">
-          <h3>전체 진행률</h3>
-          <div class="progress-bar">
-            <div class="progress" id="progressValue"></div>
-          </div>
-          <span id="progressPercent" class="info-value">0%</span>
-        </div>
-
-        <!-- 총 업무 수 -->
-        <div class="info-card">
-          <h3>총 업무 수</h3>
-          <span id="totalTasks" class="info-value">0</span>
-        </div>
-
-        <!-- 촉박 일정 -->
-        <div class="info-card urgent-card">
-          <h3>촉박 일정 (3일 이내)</h3>
-          <ul id="urgentList">
-            <li>없음</li>
-          </ul>
-        </div>
+    <!-- 업무 유형별 분포 -->
+    <div class="dashboard-card" id="task-distribution-card">
+      <h3>업무 유형별 분포</h3>
+      <div id="taskDistributionChart">
+        <!-- JS가 여기에 차트를 채울 예정 -->
       </div>
     </div>
 
-    <!-- 촉박 일정 알림 팝업 -->
-    <div id="alertPopup" class="popup" style="display: none;">
-      <div class="popup-content">
-        <span class="popup-icon">⚠️</span>
-        <p>마감일이 임박한 업무가 있습니다!</p>
-        <button id="alertCloseBtn">확인</button>
-      </div>
+    <!-- 전체 진행률 & 남은 업무 수 -->
+    <div class="dashboard-card" id="progress-card">
+      <h3>전체 진행률</h3>
+      <div class="progress-circle" id="overallProgress">0%</div>
+      <h3 style="margin-top: 20px;">남은 업무 수</h3>
+      <div class="remaining-tasks" id="remainingTasksCount">0 / 0</div>
     </div>
-  </section>
+  </div>
 
+  <!-- 촉박 일정 알림 팝업 -->
+  <div id="alertPopup" class="popup" style="display: none;">
+    <div class="popup-content">
+      <span class="popup-icon">⚠️</span>
+      <p>마감일이 임박한 업무가 있습니다!</p>
+      <button id="alertCloseBtn">확인</button>
+    </div>
+  </div>
+</section>
 
-  <!-- 하단 상태바 -->
+<!-- 하단 상태바 -->
 <footer id="statusBar">
   <div class="status-bar-content">
     <div class="status-item">
@@ -154,6 +149,7 @@
     <div id="footerProgress" class="footer-progress-fill"></div>
   </div>
 </footer>
+
 
 
   <script type="module" src="../src/main.js"></script>

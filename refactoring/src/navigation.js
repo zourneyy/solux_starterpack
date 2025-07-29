@@ -1,8 +1,7 @@
-// 1. 대시보드 렌더링 기능을 dashboard.js에서 가져오기
 import { renderDashboard } from './dashboard.js';
 
-// 페이지 전환 이벤트를 설정하는 함수
-export function setupNavigation(tasks) {
+// currentDate를 매개변수로 받음
+export function setupNavigation(tasks, currentDate) {
   const menuItems = document.querySelectorAll(".menu li");
   const sections = document.querySelectorAll(".page-section");
 
@@ -13,14 +12,14 @@ export function setupNavigation(tasks) {
       sections.forEach((section) => section.classList.remove("active"));
       document.getElementById(item.dataset.section).classList.add("active");
 
-      // 2. "대시보드" 탭을 클릭 시 import 해온 renderDashboard 함수 직접 호출
+      // renderDashboard를 호출할 때 currentDate를 함께 넘겨줌
       if (item.dataset.section === "dashboard") {
-        renderDashboard(tasks); // ★ 수정된 부분
+        renderDashboard(tasks, currentDate); 
       }
 
-      // 3. 아직 리팩토링되지 않은 기능 일단 주석 처리
+      // 아직 리팩토링되지 않은 기능은 일단 주석 처리
       // if (["todo", "doing", "done"].includes(item.dataset.section)) {
-      //   updateDayLabels(); // 이 함수는 나중에 kanban.js 등에서 가져와야 함
+      //   updateDayLabels(); 
       // }
 
       if (item.dataset.section !== "calendar") {

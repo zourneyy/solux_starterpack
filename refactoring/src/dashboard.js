@@ -1,86 +1,88 @@
-// 함수를 외부에서 사용할 수 있도록 export 추가
-// tasks는 외부에서 받아오도록 매개변수로 변경
-export function renderDashboard(tasks) {
-  // 오늘 날짜는 함수가 호출될 때마다 최신으로 계산
+// formatDate 함수 사용 위해 utils.js에서 가져오기
+import { formatDate } from './utils.js';
+
+// currentDate를 매개변수로 받아오기
+export function renderDashboard(tasks, currentDate) {
+  
+  // 날짜 네비게이션 텍스트 업데이트
+  const dateLabel = document.getElementById("dashboardDayLabel");
+  if (dateLabel) {
+    dateLabel.textContent = `${currentDate.getMonth() + 1}월 ${currentDate.getDate()}일 현황`;
+  }
+
+  // ---- 1. 마감 임박 일정 계산 ----
+  const upcomingList = document.getElementById("upcomingDeadlinesList");
   const today = new Date();
-  const urgentThreshold = 3;
+  today.setHours(0, 0, 0, 0);
 
-  // --- 내부 헬퍼 함수들 (외부에서 쓸 필요 없음, export 안 함) ---
-  function parseDate(str) {
-    if (!str) return null; // 안전장치 (날짜 문자열 없을 경우 대비)
-    const [year, month, day] = str.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  }
+  const upcomingTasks = tasks
+    .filter(t => t.dueDate && t.status !== "DONE")
+    .map(t => {
+      const dueDate = new Date(t.dueDate);
+      const diffTime = dueDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return { ...t, dDay: diffDays };
+    })
+    .filter(t => t.dDay >= 0 && t.dDay <= 7) // 7일 이내
+    .sort((a, b) => a.dDay - b.dDay);
 
-  // 대시보드 '전체' 진행률을 계산
-  function calculateOverallProgress(allTasks) {
-    // 데드라인이 아닌 일반 업무만 필터링해서 진행률 계산
-    const relevantTasks = allTasks.filter(t => !t.deadline);
-    const total = relevantTasks.length;
-    if (total === 0) return 0;
-    const done = relevantTasks.filter(t => t.status === "DONE").length;
-    return Math.round((done / total) * 100);
-  }
-
-  function getUrgentTasks(allTasks) {
-    return allTasks.filter(t => {
-      // DONE 상태인 마감 업무는 촉박 일정에서 제외
-      if (t.status === "DONE" || !t.dueDate) return false;
-      const due = parseDate(t.dueDate);
-      if (!due) return false;
-      const diffTime = due - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 올림 처리로 D-Day 계산
-      return diffDays >= 0 && diffDays <= urgentThreshold;
-    });
-  }
-  // --- 헬퍼 함수 끝 ---
-
-  // 대시보드, 하단 바 모든 UI 업데이트 처리
-  const progress = calculateOverallProgress(tasks);
-  const totalTasks = tasks.length;
-  const urgentTasks = getUrgentTasks(tasks);
-
-  // 메인 대시보드 UI 업데이트
-  document.getElementById("progressValue").style.width = `${progress}%`;
-  document.getElementById("progressPercent").textContent = `${progress}%`;
-  document.getElementById("totalTasks").textContent = totalTasks;
-
-  const urgentList = document.getElementById("urgentList");
-  urgentList.innerHTML = "";
-  if (urgentTasks.length === 0) {
-    urgentList.innerHTML = "<li>없음</li>";
-  } else {
-    urgentTasks.forEach(task => {
-      const li = document.createElement("li");
-      li.textContent = `${task.title} - 마감일: ${task.dueDate}`;
-      urgentList.appendChild(li);
-    });
-  }
-
-  // 하단 고정 바(footer) UI 업데이트
-  document.getElementById("fixedProgress").textContent = `진행률: ${progress}%`;
-  document.getElementById("fixedTaskCount").textContent = `업무 수: ${totalTasks}`;
-  document.getElementById("fixedUrgent").textContent = urgentTasks.length > 0
-    ? `촉박 일정: ${urgentTasks.length}건`
-    : "촉박 일정: 없음";
-  document.getElementById("footerProgress").style.width = `${progress}%`;
-
-  // 촉박 일정 알림 팝업 보이기
-  const alertPopup = document.getElementById("alertPopup");
-  if (alertPopup) { // ★ 안전장치: 팝업 요소가 존재하는지 확인
-    if (urgentTasks.length > 0) {
-      alertPopup.style.display = "flex"; // flex로 중앙 정렬
+  if (upcomingList) {
+    upcomingList.innerHTML = "";
+    if (upcomingTasks.length > 0) {
+      upcomingTasks.forEach(task => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong style="color: red;">D-${task.dDay}</strong>: ${task.title}`;
+        upcomingList.appendChild(li);
+      });
     } else {
-      alertPopup.style.display = "none";
+      upcomingList.innerHTML = "<li>마감 임박 일정이 없습니다.</li>";
     }
   }
-}
 
-// 이 파일이 직접 실행하는 코드는 제거
-// 알림 닫기 버튼 여기에 or main.js에서
-const alertCloseBtn = document.getElementById("alertCloseBtn");
-if (alertCloseBtn) {
-  alertCloseBtn.addEventListener("click", () => {
-    document.getElementById("alertPopup").style.display = "none";
-  });
+  // ---- 2. 업무 유형별 분포 계산 ----
+  const distributionChart = document.getElementById("taskDistributionChart");
+  const types = tasks
+    .filter(t => !t.deadline && t.date === formatDate(currentDate))
+    .reduce((acc, t) => {
+      const type = t.type || "일반";
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {});
+  
+  if (distributionChart) {
+    distributionChart.innerHTML = "";
+    for (const [type, count] of Object.entries(types)) {
+      const barHtml = `
+        <div class="dist-item" style="margin-bottom: 10px;">
+          <span>${type} (${count}개)</span>
+          <div style="background: #e0e0e0; border-radius: 3px; padding: 2px;">
+            <div style="width: ${count * 20}px; height: 10px; background: #3498db; border-radius: 3px;"></div>
+          </div>
+        </div>
+      `;
+      distributionChart.innerHTML += barHtml;
+    }
+  }
+
+  // ---- 3. 전체 진행률 및 남은 업무 수 계산 ----
+  const progressCircle = document.getElementById("overallProgress");
+  const remainingCount = document.getElementById("remainingTasksCount");
+  
+  const total = tasks.filter(t => !t.deadline).length;
+  const done = tasks.filter(t => !t.deadline && t.status === "DONE").length;
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+  if (progressCircle) {
+  // 1. CSS 변수(--p)에 진행률 값 설정해서 그래프를 그리기
+  progressCircle.style.setProperty('--p', percent);
+  // 2. 숫자 텍스트 표시할 span 태그 만들어서 넣기
+  progressCircle.innerHTML = `<span>${percent}%</span>`;
+}
+  if (remainingCount) remainingCount.textContent = `${total - done} / ${total}`;
+  
+  // ---- 4. 하단 바 업데이트 ----
+  const fixedProgress = document.getElementById("fixedProgress");
+  const footerProgress = document.getElementById("footerProgress");
+  if (fixedProgress) fixedProgress.textContent = `${percent}%`;
+  if (footerProgress) footerProgress.style.width = `${percent}%`;
 }

@@ -315,3 +315,104 @@ header input {
   user-select: none;
   box-shadow: 0 0 6px rgba(0,123,255,0.3);
 }
+
+/* --- 대시보드 스타일 --- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.dashboard-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #eee;
+}
+
+.dashboard-card h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+/* 마감 임박 일정 카드 */
+#upcomingDeadlinesList {
+  list-style-type: none;
+  padding-left: 0;
+}
+#upcomingDeadlinesList li {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* --- 하단 바 스타일 --- */
+/* 기존 footer#statusBar 에 적용될 스타일 */
+#statusBar {
+  display: flex; /* 가로 정렬 */
+  justify-content: space-between; /* 양쪽 끝으로 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  padding: 0 20px; /* 좌우 여백 */
+  height: 50px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #c2c2c2;
+  color: white;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+.status-bar-content {
+  display: flex;
+  gap: 20px; /* 항목 사이 간격 */
+}
+
+.footer-progress-bar {
+  width: 200px; /* 진행률 바 너비 고정 */
+  background-color: #555;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.footer-progress-fill {
+  height: 10px;
+  background-color: #007bff;
+  border-radius: 5px;
+}
+
+/* --- 대시보드 진행률 원형 그래프 스타일 --- */
+.progress-circle {
+  position: relative;
+  width: 120px; /* 원의 크기 */
+  height: 120px; /* 원의 크기 */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  
+  /* JavaScript에서 전달된 --p 변수를 사용해 원형 그래프 그리기 */
+  background: conic-gradient(#007bff var(--p, 0%), #e0e0e0 0);
+  
+  &::before {
+    content: "";
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    background: #ffffff;
+    border-radius: 50%;
+  }
+  
+  /* 텍스트가 흰색 원 위로 올라오도록 */
+  & span {
+    position: relative;
+    z-index: 1;
+  }
+}
