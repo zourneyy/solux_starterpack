@@ -2,7 +2,7 @@
 import { renderDashboard } from './dashboard.js';
 import { setupFooterInteraction } from './fixedbar.js'; // 하단 바 기능 가져오기
 import { setupNavigation } from './navigation.js'; // 네비게이션 기능 가져오기
-import { renderCalendar, setupCalendarControls } from './calendar.js'; // 달력 기능 가져오기
+import { renderCalendar, setupCalendarControls, renderCalendarSidebar } from './calendar.js'; // 달력 기능 가져오기
 import { formatDate } from './utils.js'; // 유틸 함수 가져오기
 import { setupSearch } from './search.js'; // 검색 기능 가져오기
 // import { renderKanban } from './kanban.js'; // 다른 기능도 이 형식으로 가져오기
@@ -20,6 +20,7 @@ export function saveAndRender() {
   // 2. 관련된 모든 화면 다시 렌더링
   renderDashboard(tasks);
   renderCalendar(tasks, currentDate, handleDateClick); // 달력 다시 그리기
+  renderCalendarSidebar(tasks, formatDate(currentDate));
   // renderKanban(tasks); // 칸반보드 렌더링 함수도 여기서 같이 호출
 }
 
