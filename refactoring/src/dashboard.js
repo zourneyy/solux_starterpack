@@ -28,6 +28,38 @@ if (upcomingList) {
 
   // ---- 2. 업무 유형별 분포 계산 ----
   const distributionChart = document.getElementById("taskDistributionChart");
+
+  if (distributionChart) {
+  // filter: deadline 없는, 현재 날짜의 tasks만
+  const types = tasks
+    .filter(t => !t.deadline && t.date === formatDate(currentDate))
+    .reduce((acc, t) => {
+      const type = t.type || "일반";
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {});
+
+  // 차트 영역 초기화
+  distributionChart.innerHTML = "";
+
+  // 유형별 데이터가 있으면 순회하며 바 생성
+  for (const [type, count] of Object.entries(types)) {
+    const barHtml = `
+      <div class="dist-item" style="margin-bottom: 10px;">
+        <span>${type} (${count}개)</span>
+        <div style="background: #e0e0e0; border-radius: 3px; padding: 2px; width: 100%; max-width: 200px;">
+          <div style="width: ${count * 20}px; height: 10px; background: #3498db; border-radius: 3px;"></div>
+        </div>
+      </div>
+    `;
+    distributionChart.insertAdjacentHTML('beforeend', barHtml);
+  }
+
+  // 업무 유형이 없다면 빈 메시지 출력
+  if (Object.keys(types).length === 0) {
+    distributionChart.innerHTML = "<p>등록된 업무가 없습니다.</p>";
+  }
+}
   
   // ---- 3. 전체 진행률 및 남은 업무 수 계산 ----
   const progressCircle = document.getElementById("overallProgress");
