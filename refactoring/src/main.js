@@ -1,5 +1,5 @@
 // 1. 기능별 렌더링 및 설정 함수 가져오기
-import { renderDashboard } from './dashboard.js';
+import { renderDashboard, setupDashboardInteractions } from './dashboard.js';
 import { setupFooterInteraction } from './fixedbar.js';
 import { setupNavigation } from './navigation.js';
 import { renderCalendar, setupCalendarControls, renderCalendarSidebar } from './calendar.js';
@@ -11,7 +11,7 @@ import { setupSearch } from './search.js';
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let currentDate = new Date();
 
-// ★★★ (중요) 데이터 저장과 화면 새로고침을 한번에 처리하는 공용 함수 ★★★
+// 데이터 저장과 화면 새로고침을 한번에 처리하는 공용 함수
 export function saveAndRender() {
   localStorage.setItem('tasks', JSON.stringify(tasks));
 
@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupNavigation(tasks, currentDate);
   setupCalendarControls(handleMonthChange);
   setupSearch(tasks);
+  setupDashboardInteractions();
 });
 
 /*

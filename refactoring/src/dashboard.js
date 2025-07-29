@@ -1,7 +1,7 @@
 // formatDate 함수 사용 위해 utils.js에서 가져오기
 import { formatDate } from './utils.js';
 
-// currentDate를 매개변수로 받아오기
+// 1. 렌더링 함수: 데이터를 화면에 그리는 역할
 export function renderDashboard(tasks, currentDate) {
   
   // 날짜 네비게이션 텍스트 업데이트
@@ -67,7 +67,6 @@ export function renderDashboard(tasks, currentDate) {
   // ---- 3. 전체 진행률 및 남은 업무 수 계산 ----
   const progressCircle = document.getElementById("overallProgress");
   const remainingCount = document.getElementById("remainingTasksCount");
-  
   const total = tasks.filter(t => !t.deadline).length;
   const done = tasks.filter(t => !t.deadline && t.status === "DONE").length;
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
@@ -79,7 +78,6 @@ export function renderDashboard(tasks, currentDate) {
   if (remainingCount) remainingCount.textContent = `${total - done} / ${total}`;
   
   // ---- 4. 하단 바 전체 업데이트 ----
-  // 오늘 진행 상황 계산
   const tasksForDay = tasks.filter(t => !t.deadline && t.date === formatDate(currentDate));
   const todoCount = tasksForDay.filter(t => t.status === 'TODO').length;
   const doingCount = tasksForDay.filter(t => t.status === 'DOING').length;
@@ -92,13 +90,11 @@ export function renderDashboard(tasks, currentDate) {
       statusCountsEl.textContent = `TODO ${todoCount} | DOING ${doingCount} | DONE ${doneCountDay} | 남은 업무 ${remainingDayTasks}/${totalDayTasks}`;
   }
 
-  // 촉박 일정 개수 업데이트
   const footerUrgentCountEl = document.getElementById('footerUrgentCount');
   if (footerUrgentCountEl) {
       footerUrgentCountEl.textContent = `${upcomingTasks.length}개`;
   }
 
-  // 전체 진행률 계산 및 업데이트 (프로젝트 전체 기준)
   const allProjectTasks = tasks.filter(t => !t.deadline);
   const allDoneTasks = allProjectTasks.filter(t => t.status === 'DONE').length;
   const overallPercent = allProjectTasks.length === 0 ? 0 : Math.round((allDoneTasks / allProjectTasks.length) * 100);
@@ -108,4 +104,27 @@ export function renderDashboard(tasks, currentDate) {
 
   if (footerProgressFillEl) footerProgressFillEl.style.width = `${overallPercent}%`;
   if (footerProgressPercentEl) footerProgressPercentEl.textContent = `${overallPercent}%`;
+
+  // ---- 5. 알림 팝업 띄우기 ----
+  const alertPopup = document.getElementById("alertPopup");
+  if (alertPopup) {
+    if (upcomingTasks.length > 0) {
+      alertPopup.style.display = "flex";
+    } else {
+      alertPopup.style.display = "none";
+    }
+  }
+}
+
+// 이벤트 설정 함수: 클릭 등 상호작용 설정
+export function setupDashboardInteractions() {
+  const alertCloseBtn = document.getElementById("alertCloseBtn");
+  if (alertCloseBtn) {
+    alertCloseBtn.addEventListener("click", () => {
+      const alertPopup = document.getElementById("alertPopup");
+      if (alertPopup) {
+        alertPopup.style.display = "none";
+      }
+    });
+  }
 }

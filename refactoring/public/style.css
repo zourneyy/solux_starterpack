@@ -475,3 +475,52 @@ footer#statusBar {
   color: #007bff;
 }
 
+/* --- 알림 팝업 스타일 --- */
+.popup {
+  position: fixed; /* 화면에 고정 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은 배경 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 다른 요소들보다 위에 보이도록 */
+}
+
+.popup-content {
+  background-color: white;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  width: 350px;
+}
+
+.popup-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.popup-content p {
+  font-size: 16px;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+#alertCloseBtn {
+  background-color: #5b9bd5;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+#alertCloseBtn:hover {
+  background-color: #4a8ac9;
+}
