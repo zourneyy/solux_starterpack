@@ -73,16 +73,39 @@ export function renderDashboard(tasks, currentDate) {
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
   if (progressCircle) {
-  // 1. CSS 변수(--p)에 진행률 값 설정해서 그래프를 그리기
-  progressCircle.style.setProperty('--p', percent);
-  // 2. 숫자 텍스트 표시할 span 태그 만들어서 넣기
-  progressCircle.innerHTML = `<span>${percent}%</span>`;
-}
+    progressCircle.style.setProperty('--p', percent);
+    progressCircle.innerHTML = `<span>${percent}%</span>`;
+  }
   if (remainingCount) remainingCount.textContent = `${total - done} / ${total}`;
   
-  // ---- 4. 하단 바 업데이트 ----
-  const fixedProgress = document.getElementById("fixedProgress");
-  const footerProgress = document.getElementById("footerProgress");
-  if (fixedProgress) fixedProgress.textContent = `${percent}%`;
-  if (footerProgress) footerProgress.style.width = `${percent}%`;
+  // ---- 4. 하단 바 전체 업데이트 ----
+  // 오늘 진행 상황 계산
+  const tasksForDay = tasks.filter(t => !t.deadline && t.date === formatDate(currentDate));
+  const todoCount = tasksForDay.filter(t => t.status === 'TODO').length;
+  const doingCount = tasksForDay.filter(t => t.status === 'DOING').length;
+  const doneCountDay = tasksForDay.filter(t => t.status === 'DONE').length;
+  const totalDayTasks = tasksForDay.length;
+  const remainingDayTasks = totalDayTasks - doneCountDay;
+
+  const statusCountsEl = document.getElementById('statusCounts');
+  if (statusCountsEl) {
+      statusCountsEl.textContent = `TODO ${todoCount} | DOING ${doingCount} | DONE ${doneCountDay} | 남은 업무 ${remainingDayTasks}/${totalDayTasks}`;
+  }
+
+  // 촉박 일정 개수 업데이트
+  const footerUrgentCountEl = document.getElementById('footerUrgentCount');
+  if (footerUrgentCountEl) {
+      footerUrgentCountEl.textContent = `${upcomingTasks.length}개`;
+  }
+
+  // 전체 진행률 계산 및 업데이트 (프로젝트 전체 기준)
+  const allProjectTasks = tasks.filter(t => !t.deadline);
+  const allDoneTasks = allProjectTasks.filter(t => t.status === 'DONE').length;
+  const overallPercent = allProjectTasks.length === 0 ? 0 : Math.round((allDoneTasks / allProjectTasks.length) * 100);
+
+  const footerProgressFillEl = document.getElementById('footerProgressFill');
+  const footerProgressPercentEl = document.getElementById('footerProgressPercent');
+
+  if (footerProgressFillEl) footerProgressFillEl.style.width = `${overallPercent}%`;
+  if (footerProgressPercentEl) footerProgressPercentEl.textContent = `${overallPercent}%`;
 }

@@ -416,3 +416,62 @@ header input {
     z-index: 1;
   }
 }
+
+/* --- 새 하단 바 스타일  --- */
+footer#statusBar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+  padding: 10px 25px;
+  height: 75px; 
+  color: #333;
+  box-sizing: border-box;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-title {
+  font-size: 14px;
+  color: #555;
+  font-weight: bold;
+}
+
+#statusCounts, #footerUrgentCount {
+  font-size: 16px;
+  color: #333;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#footerProgressBar {
+  width: 200px;
+  height: 12px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#footerProgressFill {
+  height: 100%;
+  background-color: #007bff;
+  border-radius: 6px;
+}
+
+#footerProgressPercent {
+  font-size: 16px;
+  font-weight: bold;
+  color: #007bff;
+}
+

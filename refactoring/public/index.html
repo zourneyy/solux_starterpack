@@ -131,24 +131,31 @@
 
 <!-- 하단 상태바 -->
 <footer id="statusBar">
-  <div class="status-bar-content">
-    <div class="status-item">
-      <strong>진행률:</strong>
-      <span id="fixedProgress">0%</span>
-    </div>
-    <div class="status-item">
-      <strong>업무 수:</strong>
-      <span id="fixedTaskCount">0</span>
-    </div>
-    <div class="status-item">
-      <strong>촉박 일정:</strong>
-      <span id="fixedUrgent">없음</span>
-    </div>
+  <!-- 1. 오늘 진행 상황 -->
+  <div class="footer-section">
+    <div class="footer-title">오늘 진행 상황</div>
+    <div id="statusCounts">TODO 0개 | DOING 0개...</div>
   </div>
-  <div class="footer-progress-bar">
-    <div id="footerProgress" class="footer-progress-fill"></div>
+
+  <!-- 2. 촉박 일정  -->
+  <div class="footer-section">
+    <div class="footer-title">촉박 일정</div>
+    <div id="footerUrgentCount">0개</div>
+  </div>
+
+  <!-- 3. 전체 진행률 -->
+  <div class="footer-section">
+    <div class="footer-title">전체 진행률</div>
+    <div class="progress-bar-container">
+      <div id="footerProgressBar">
+        <div id="footerProgressFill"></div>
+      </div>
+      <span id="footerProgressPercent">0%</span>
+    </div>
   </div>
 </footer>
+
+
 
 
 
