@@ -208,79 +208,7 @@ header input {
   font-weight: bold;
 }
 
-/* 2. 하단 상태바 */
-#statusBar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #e5eaf0;
-  text-align: left;
-  padding: 12px 20px;
-  font-weight: bold;
-  border-top: 2px solid #ccc;
-  z-index: 100;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  height: 40px;
-  box-sizing: border-box;
-}
-
-#progressInfo {
-  flex-shrink: 0;
-}
-
-.footer-progress-bar {
-  flex-grow: 1;
-  height: 12px;
-  background: #ccc;
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 0;
-}
-
-.footer-progress-fill {
-  height: 100%;
-  width: 0%;
-  background: #70a5ff;
-  transition: width 0.3s ease;
-}
-
-/* 대시보드 */
-.dashboard-box {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.dashboard-box div {
-  background: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-.progress-bar {
-  width: 100%;
-  background: #eee;
-  border-radius: 10px;
-  overflow: hidden;
-  height: 20px;
-}
-.progress-fill {
-  height: 100%;
-  background: #70a5ff;
-  width: 0%;
-  text-align: right;
-  color: white;
-  padding-right: 5px;
-  transition: width 0.3s ease;
-}
-
-/* 3. todo, doing, done 페이지 날짜 부분 디자인 */
+/* todo, doing, done 페이지 날짜 부분 디자인 */
 .day-nav {
   display: flex;
   align-items: center;
@@ -316,7 +244,11 @@ header input {
   box-shadow: 0 0 6px rgba(0,123,255,0.3);
 }
 
-/* --- 대시보드 스타일 --- */
+/* ================================================================ */
+/*                대시보드 / 하단 바 / 팝업 최종 스타일                 */
+/* ================================================================ */
+
+/* --- 대시보드 --- */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -328,8 +260,8 @@ header input {
   background-color: #ffffff;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid #eee;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9e9e9;
 }
 
 .dashboard-card h3 {
@@ -341,55 +273,22 @@ header input {
   padding-bottom: 10px;
 }
 
-/* 마감 임박 일정 카드 */
 #upcomingDeadlinesList {
   list-style-type: none;
   padding-left: 0;
+  margin: 0;
 }
+
 #upcomingDeadlinesList li {
   font-size: 14px;
-  margin-bottom: 10px;
+  line-height: 1.6;
 }
 
-/* --- 하단 바 스타일 --- */
-/* 기존 footer#statusBar 에 적용될 스타일 */
-#statusBar {
-  display: flex; /* 가로 정렬 */
-  justify-content: space-between; /* 양쪽 끝으로 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
-  padding: 0 20px; /* 좌우 여백 */
-  height: 50px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background-color: #c2c2c2;
-  color: white;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-}
-
-.status-bar-content {
-  display: flex;
-  gap: 20px; /* 항목 사이 간격 */
-}
-
-.footer-progress-bar {
-  width: 200px; /* 진행률 바 너비 고정 */
-  background-color: #555;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.footer-progress-fill {
-  height: 10px;
-  background-color: #007bff;
-  border-radius: 5px;
-}
-
-/* --- 대시보드 진행률 원형 그래프 스타일 --- */
+/* 진행률 원형 그래프 */
 .progress-circle {
   position: relative;
-  width: 120px; /* 원의 크기 */
-  height: 120px; /* 원의 크기 */
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -397,37 +296,38 @@ header input {
   font-size: 24px;
   font-weight: bold;
   color: #333;
-  
-  /* JavaScript에서 전달된 --p 변수를 사용해 원형 그래프 그리기 */
-  background: conic-gradient(#007bff var(--p, 0%), #e0e0e0 0);
-  
-  &::before {
-    content: "";
-    position: absolute;
-    width: 85%;
-    height: 85%;
-    background: #ffffff;
-    border-radius: 50%;
-  }
-  
-  /* 텍스트가 흰색 원 위로 올라오도록 */
-  & span {
-    position: relative;
-    z-index: 1;
-  }
+  background: conic-gradient(#5b9bd5 var(--p, 0%), #efefef 0);
 }
 
-/* --- 새 하단 바 스타일  --- */
+.progress-circle::before {
+  content: "";
+  position: absolute;
+  width: 85%;
+  height: 85%;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.progress-circle span {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- 하단 바 --- */
 footer#statusBar {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: #f5f5f5;
+  background-color: #f8f9fa;
   border-top: 1px solid #e0e0e0;
   padding: 10px 25px;
   height: 75px; 
   color: #333;
   box-sizing: border-box;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  left: 0;
 }
 
 .footer-section {
@@ -435,16 +335,17 @@ footer#statusBar {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  text-align: center;
 }
 
 .footer-title {
-  font-size: 14px;
+  font-size: 13px;
   color: #555;
   font-weight: bold;
 }
 
 #statusCounts, #footerUrgentCount {
-  font-size: 16px;
+  font-size: 15px;
   color: #333;
 }
 
@@ -465,28 +366,38 @@ footer#statusBar {
 
 #footerProgressFill {
   height: 100%;
-  background-color: #007bff;
+  background-color: #5b9bd5;
   border-radius: 6px;
 }
 
 #footerProgressPercent {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
-  color: #007bff;
+  color: #5b9bd5;
 }
 
-/* --- 알림 팝업 스타일 --- */
+.footer-remaining-tasks {
+  color: #5b9bd5;
+  font-weight: bold;
+}
+
+.footer-urgent-count {
+  color: #d9534f;
+  font-weight: bold;
+}
+
+/* --- 알림 팝업 --- */
 .popup {
-  position: fixed; /* 화면에 고정 */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은 배경 */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* 다른 요소들보다 위에 보이도록 */
+  z-index: 1000;
 }
 
 .popup-content {
