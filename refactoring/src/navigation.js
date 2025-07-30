@@ -2,7 +2,6 @@
 import { renderDashboard } from './dashboard.js';
 import { initKanban } from './kanban.js';
 import { formatDate } from './utils.js';
-import { tasks } from './main.js';
 
 export function setupNavigation(taskList, current) {
   const menuItems = document.querySelectorAll(".menu li");
@@ -19,10 +18,10 @@ export function setupNavigation(taskList, current) {
         renderDashboard(taskList, current);
       }
 
-      // 페이지 이동 시 카드도 리렌더링
       if (["todo", "doing", "done"].includes(item.dataset.section)) {
+        // 최신 데이터 불러와서 전달
         const latestTasks = JSON.parse(localStorage.getItem("Tasks")) || [];
-        initKanban(taskList, formatDate(current));
+        initKanban(latestTasks, formatDate(current));
       }
 
       if (item.dataset.section !== "calendar") {
