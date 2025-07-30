@@ -1,13 +1,15 @@
-//tasks.js
-
+// tasks.js
 import { saveAndRender } from './main.js';
 
 let tasks;
 let selectedDate;
+let onCardCreatedCallback;  // 콜백 저장용
+let isCreateBtnSetup = false; // 중복 이벤트 등록 방지
 
 export function initTaskManager(taskList, currentDate, onCardCreated) {
   tasks = taskList;
   selectedDate = currentDate;
+  onCardCreatedCallback = onCardCreated;
 
   // 떠다니는 추가 버튼
   const addCardBtn = document.getElementById("addCardBtn");
@@ -33,39 +35,56 @@ export function initTaskManager(taskList, currentDate, onCardCreated) {
     });
   }
 
-  // 모달 추가 버튼
-  const createBtn = document.getElementById("createCardBtn");
-  if (createBtn) {
-    createBtn.addEventListener("click", () => {
-      const title = document.getElementById("cardTitleInput").value.trim();
-      const detail = document.getElementById("cardDetailInput").value.trim();
-      const status = document.getElementById("cardStatusSelect").value.toLowerCase();
-      const type = document.getElementById("cardTypeSelect").value;
-      const date = selectedDate || new Date().toISOString().split("T")[0];
+  // 모달 추가 버튼 - 중복 이벤트 등록 방지
+  if (!isCreateBtnSetup) {
+    const createBtn = document.getElementById("createCardBtn");
+    if (createBtn) {
+      createBtn.addEventListener("click", (e) => {
+        e.preventDefault(); // form 제출 방지
 
-      if (!title) return alert("제목을 입력하세요.");
+        const titleInput = document.getElementById("cardTitleInput");
+        const detailInput = document.getElementById("cardDetailInput");
+        const statusSelect = document.getElementById("cardStatusSelect");
+        const typeSelect = document.getElementById("cardTypeSelect");
 
-      const newTask = {
-        id: Date.now(),
-        title,
-        detail,
-        status,
-        type,
-        date,
-        deadline: false,
-        dueDate: null,
-      };
+        const title = titleInput.value.trim();
+        const detail = detailInput.value.trim();
+        const status = statusSelect.value.toLowerCase();
+        const type = typeSelect.value;
+        const date = selectedDate || new Date().toISOString().split("T")[0];
 
-      tasks.push(newTask);
-      localStorage.setItem("Tasks", JSON.stringify(tasks));
-      if (typeof onCardCreated === "function") onCardCreated();
+        if (!title) {
+          alert("제목을 입력하세요.");
+          return;
+        }
 
-      document.getElementById("addCardModal").classList.add("hidden");
+        const newTask = {
+          id: Date.now(),
+          title,
+          detail,
+          status,
+          type,
+          date,
+          deadline: false,
+          dueDate: null,
+          created: new Date().toISOString(),  // 생성일자 필수 추가
+        };
 
-      // 입력 필드 초기화
-      document.getElementById("cardTitleInput").value = "";
-      document.getElementById("cardDetailInput").value = "";
-    });
+        tasks.push(newTask);
+        localStorage.setItem("Tasks", JSON.stringify(tasks));
+
+        // UI 바로 갱신 콜백 호출
+        if (typeof onCardCreatedCallback === "function") onCardCreatedCallback();
+
+        // 모달 닫기
+        document.getElementById("addCardModal").classList.add("hidden");
+
+        // 입력 필드 초기화
+        titleInput.value = "";
+        detailInput.value = "";
+      });
+    }
+    isCreateBtnSetup = true;
   }
 }
 
@@ -79,7 +98,6 @@ export function initDeadlineManager(taskList, onUpdate) {
   addDeadlineBtn?.addEventListener("click", () => {
     if (modal) {
       modal.classList.remove("hidden");
-      // 기본 마감일은 오늘로 설정
       const todayStr = new Date().toISOString().split("T")[0];
       const deadlineDateInput = document.getElementById("deadlineDateInput");
       if (deadlineDateInput) deadlineDateInput.value = todayStr;
@@ -113,6 +131,7 @@ export function initDeadlineManager(taskList, onUpdate) {
       date: dueDate,
       deadline: true,
       dueDate,
+      created: new Date().toISOString(),  // 생성일자 필수 추가
     };
 
     taskList.push(newDeadlineTask);
