@@ -1,5 +1,5 @@
 // -------------------- 공통 변수 --------------------
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
 let selectedDate = getToday(); // 오늘 날짜부터 시작
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
@@ -43,7 +43,7 @@ function parseDate(dateStr) {
 
 // -------------------- 데이터 저장 --------------------
 function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+  localStorage.setItem("Tasks", JSON.stringify(tasks));
   renderCards();
   createCalendar();
   renderTasksForDate();
@@ -206,16 +206,25 @@ function renderCards() {
         <div class="detail">${task.detail || ""}</div>
       `;
 
-      card.querySelector(".delete-btn").addEventListener("click", () => {
-        tasks = tasks.filter((t) => t.id !== task.id);
-        saveTasks();
-      });
+            // 드래그 기능
+            card.addEventListener("dragstart", () => {
+              draggedCard = card;
+              card.classList.add("dragging");
+              document.getElementById("trashZone").classList.remove("hidden");
+            });
+            card.addEventListener("dragend", () => {
+              draggedCard = null;
+              card.classList.remove("dragging");
+              document.getElementById("trashZone").classList.add("hidden");
+            });      
 
       document.querySelector(`[data-status="${task.status}"]`).appendChild(card);
     });
   updateProgress();
 }
 renderCards();
+
+
 
 // -------------------- 드래그 앤 드롭 --------------------
 let draggedCard = null;
@@ -401,5 +410,13 @@ function updateDashboard() {
   document.getElementById("remainingTasks").innerHTML = `<strong>${total - doneCount}</strong> / ${total}`;
 }
 
-// 초기 로드
-saveTasks();
+// -------------------- 초기 로드 (DOMContentLoaded로 감싸기) --------------------
+document.addEventListener("DOMContentLoaded", () => {
+  createCalendar();
+  renderCards();
+  renderTasksForDate();
+  renderDeadlines();
+  updateSelectedDateTitle();
+  updateDayLabels();
+  updateDashboard();
+});

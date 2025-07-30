@@ -1,56 +1,55 @@
-// tasks.js
-import { saveAndRender } from './main.js';
+let tasks;
+let selectedDate;
 
-let tasks = [
-  { id: 1, title: "테스트 마감 임박 업무", type: "테스트", date: "2025-08-01", status: "TODO", deadline: true, dueDate: "2025-08-02" },
-  // ... 나머지 데이터
-];
-let selectedDate = "";
-
-// -------------------- 초기화 --------------------
-export function initTaskManager(taskList, currentDate) {
+export function initTaskManager(taskList, currentDate, onCardCreated) {
   tasks = taskList;
   selectedDate = currentDate;
-  setupAddTaskButtons();
-}
 
-// -------------------- 할 일 추가 버튼 --------------------
-function setupAddTaskButtons() {
-  const addTaskBtn = document.getElementById("addTaskBtn");
-  const addDeadlineBtn = document.getElementById("addDeadlineBtn");
+  const addBtn = document.getElementById("addCardBtn");
+  if (addBtn) {
+    console.log("✅ 카드 추가 버튼 찾음");
+    addBtn.addEventListener("click", () => {
+      console.log("➕ 버튼 클릭됨");
+      document.getElementById("addCardModal").classList.remove("hidden");
+    });
+  } else {
+    console.log("❌ addCardBtn 못 찾음");
+  }
 
-  if (addTaskBtn) {
-    addTaskBtn.addEventListener("click", () => {
-      if (!selectedDate) return alert("날짜를 먼저 선택하세요!");
-      const title = prompt("할 일 제목:");
-      if (!title) return;
-      const type = prompt("업무 유형 (디자인, 개발 등):") || "일반";
-      const detail = prompt("세부 사항:") || "";
-      tasks.push({
-        id: Date.now(),
-        title,
-        type,
-        detail,
-        date: selectedDate,
-        status: "todo",
-        deadline: false
-      });
-      saveAndRender();
+  const cancelBtn = document.getElementById("cancelCardBtn");
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      document.getElementById("addCardModal").classList.add("hidden");
     });
   }
 
-  if (addDeadlineBtn) {
-    addDeadlineBtn.addEventListener("click", () => {
-      if (!selectedDate) return alert("날짜를 먼저 선택하세요!");
-      const title = prompt("마감 업무 제목:");
-      if (!title) return;
-      tasks.push({
+  const createBtn = document.getElementById("createCardBtn");
+  if (createBtn) {
+    createBtn.addEventListener("click", () => {
+      const title = document.getElementById("cardTitleInput").value.trim();
+      const detail = document.getElementById("cardDetailInput").value.trim();
+      const status = document.getElementById("cardStatusSelect").value;
+      const type = document.getElementById("cardTypeSelect").value;
+      const date = selectedDate || new Date().toISOString().split("T")[0];
+
+      if (!title) return alert("제목을 입력하세요.");
+
+      const newTask = {
         id: Date.now(),
         title,
-        date: selectedDate,
-        deadline: true
-      });
-      saveAndRender();
+        detail,
+        status,
+        type,
+        date,
+        deadline: false,
+        dueDate: null
+      };
+
+      tasks.push(newTask);
+      localStorage.setItem("Tasks", JSON.stringify(tasks));
+      if (typeof onCardCreated === "function") onCardCreated();
+
+      document.getElementById("addCardModal").classList.add("hidden");
     });
   }
 }

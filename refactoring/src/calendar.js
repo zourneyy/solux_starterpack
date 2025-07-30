@@ -68,10 +68,10 @@ export function setupCalendarControls(onMonthChange) {
 }
 
 // 달력 사이드바의 UI 업데이트하는 함수들 모아서 export
-export function renderCalendarSidebar(tasks, selectedDateStr) {
+export function renderCalendarSidebar(Tasks, selectedDateStr) {
   updateSelectedDateTitle(selectedDateStr);
-  renderTasksForDate(tasks, selectedDateStr);
-  renderDeadlines(tasks, selectedDateStr);
+  renderTasksForDate(Tasks, selectedDateStr);
+  renderDeadlines(Tasks, selectedDateStr);
 }
 
 // --- 아래 함수들은 내부 헬퍼 함수, export 하지 않음 ---
@@ -88,10 +88,10 @@ function updateSelectedDateTitle(selectedDateStr) {
   title.textContent = `${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
 }
 
-function renderTasksForDate(tasks, selectedDateStr) {
+function renderTasksForDate(Tasks, selectedDateStr) {
   const list = document.getElementById("taskListForDate");
   if (!list) return; // 안전장치
-
+  const tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
   list.innerHTML = "";
   const filtered = tasks.filter((t) => t.date === selectedDateStr && !t.deadline);
   if (filtered.length === 0) {
@@ -116,4 +116,11 @@ function renderDeadlines(tasks, selectedDateStr) {
     li.textContent = d.title;
     list.appendChild(li);
   });
+}
+
+const calendarTitle = document.getElementById("calendarTitle");
+if (calendarTitle) {
+  const today = new Date();
+  const options = { month: 'long', day: 'numeric' }; // '7월 30일' 형태
+  calendarTitle.textContent = today.toLocaleDateString('ko-KR', options);
 }

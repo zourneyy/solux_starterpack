@@ -1,7 +1,10 @@
+// navigation.js
 import { renderDashboard } from './dashboard.js';
+import { initKanban } from './kanban.js';
+import { formatDate } from './utils.js';
+import { tasks, currentDate } from './main.js';
 
-// currentDate를 매개변수로 받음
-export function setupNavigation(tasks, currentDate) {
+export function setupNavigation(taskList, current) {
   const menuItems = document.querySelectorAll(".menu li");
   const sections = document.querySelectorAll(".page-section");
 
@@ -12,21 +15,18 @@ export function setupNavigation(tasks, currentDate) {
       sections.forEach((section) => section.classList.remove("active"));
       document.getElementById(item.dataset.section).classList.add("active");
 
-      // renderDashboard를 호출할 때 currentDate를 함께 넘겨줌
       if (item.dataset.section === "dashboard") {
-        renderDashboard(tasks, currentDate); 
+        renderDashboard(taskList, current);
       }
 
-      // 아직 리팩토링되지 않은 기능은 일단 주석 처리
-      // if (["todo", "doing", "done"].includes(item.dataset.section)) {
-      //   updateDayLabels(); 
-      // }
+      // 🔁 페이지 이동 시 카드도 리렌더링
+      if (["todo", "doing", "done"].includes(item.dataset.section)) {
+        initKanban(taskList, formatDate(current));
+      }
 
       if (item.dataset.section !== "calendar") {
         const searchResults = document.getElementById("searchResults");
-        if (searchResults) {
-          searchResults.style.display = "none";
-        }
+        if (searchResults) searchResults.style.display = "none";
       }
     });
   });
