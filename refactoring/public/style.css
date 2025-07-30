@@ -700,3 +700,9 @@ footer#statusBar {
   border-radius: 3px;
   transition: background-color 0.3s ease;
 }
+
+/*검색 기능 하이라이트 표시*/
+.highlight {
+  color: red;
+  font-weight: bold;
+}
