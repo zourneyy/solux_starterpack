@@ -45,6 +45,16 @@ export function renderCalendar(tasks, currentDate, onDateClick) {
 
     if (dateKey === todayStr) cell.classList.add("today");
 
+    // 마감 업무 개수 확인
+    const deadlineCount = tasks.filter(t => t.deadline && t.date === dateKey).length;
+
+    // 마감 업무 수만큼 빨간 줄 추가
+    for (let j = 0; j < deadlineCount; j++) {
+      const redLine = document.createElement("div");
+      redLine.className = "deadline-indicator";
+      cell.appendChild(redLine);
+    }
+
     cell.addEventListener("click", () => onDateClick(dateKey));
 
     calendarContainer.appendChild(cell);
