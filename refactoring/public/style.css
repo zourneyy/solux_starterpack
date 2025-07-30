@@ -149,6 +149,17 @@ header input {
   margin-bottom: 10px;
 }
 
+/*달력 요일 부분*/
+.calendar-day-header {
+  background-color: #e1d5d5;  /* 연한 회색 배경 */
+  color: #333;                /* 어두운 글자색 */
+  font-weight: bold;
+  text-align: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+
 /* 칸반보드 */
 .kanban-page .kanban-board {
   display: flex;
@@ -669,4 +680,13 @@ footer#statusBar {
 .calendar-page .floating-add-btn,
 .calendar-page .trash-zone {
   display: none !important;
+}
+
+/*달력 마감일 표시*/
+.deadline-indicator {
+  height: 5px;
+  background-color: #dc665b;
+  margin-top: 4px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
 }
