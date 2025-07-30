@@ -26,8 +26,51 @@ if (upcomingList) {
   }
 }
 
-  // ---- 2. 업무 유형별 분포 계산 ----
-  const distributionChart = document.getElementById("taskDistributionChart");
+  // ---- 2. 중요도별 분포 계산 ----
+// 대시보드 내 분포 차트/영역 DOM
+const distributionChart = document.getElementById("taskDistributionChart");
+if (!distributionChart) return;
+
+// 중요도별 개수 집계
+const importanceCount = {};
+tasks.forEach(task => {
+  if (!task.deadline) { // 마감 업무 제외
+    const importance = task.type || "일반";  // 기본값 '일반' 사용
+    importanceCount[importance] = (importanceCount[importance] || 0) + 1;
+  }
+});
+
+// 차트 영역 초기화
+distributionChart.innerHTML = "";
+
+// 간단히 텍스트 혹은 바 형태로 렌더링
+for (const [level, count] of Object.entries(importanceCount)) {
+  const total = Object.values(importanceCount).reduce((a, b) => a + b, 0);
+  const percent = ((count / total) * 100).toFixed(1);
+  
+  // 바 요소 만들기
+  const barContainer = document.createElement("div");
+  barContainer.style.marginBottom = "6px";
+  
+  const label = document.createElement("span");
+  label.textContent = `${level} (${count}개) `;
+  label.style.fontWeight = "bold";
+  
+  const bar = document.createElement("div");
+  bar.style.display = "inline-block";
+  bar.style.height = "14px";
+  bar.style.width = `${percent}%`;
+  bar.style.backgroundColor = "#70a5ff";
+  bar.style.borderRadius = "4px";
+  bar.style.verticalAlign = "middle";
+  bar.style.transition = "width 0.3s ease";
+  
+  barContainer.appendChild(label);
+  barContainer.appendChild(bar);
+  
+  distributionChart.appendChild(barContainer);
+}
+
   
   // ---- 3. 전체 진행률 및 남은 업무 수 계산 ----
   const progressCircle = document.getElementById("overallProgress");
