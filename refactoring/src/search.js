@@ -12,7 +12,7 @@ export function setupSearch(tasks) {
 
   searchInput.addEventListener("input", () => {
     const query = searchInput.value.toLowerCase();
-    
+
     if (!query) {
       searchResultsSection.style.display = "none";
       return;
@@ -23,25 +23,52 @@ export function setupSearch(tasks) {
         (task.title && task.title.toLowerCase().includes(query)) ||
         (task.detail || "").toLowerCase().includes(query)
     );
-    
-    searchContainer.innerHTML = ""; // 이전 검색 결과 초기화
+
+    // ▼▼▼ 이전 검색 결과 초기화 ▼▼▼
+    searchContainer.innerHTML = "";
     searchResultsSection.style.display = "block";
 
-    // ▼▼▼ 바로 이 부분입니다 ▼▼▼
-    result.forEach((task) => {
-      const div = document.createElement("div");
-      div.classList.add("card");
+    // ▼▼▼ 하이라이트 함수 (빨간색으로 표시) ▼▼▼
+    const highlighted = (text) =>
+      text.replace(new RegExp(`(${query})`, "gi"), '<span class="highlight" style="color:red;">$1</span>');
 
-      const highlighted = (text) =>
-        text.replace(new RegExp(`(${query})`, "gi"), '<span class="highlight">$1</span>');
+    // ▼▼▼ 날짜별 그룹핑 ▼▼▼
+    const groupedByDate = {};
+    result.forEach(task => {
+      // date가 있으면 'YYYY-MM-DD' 형식으로, 없으면 '날짜 없음'
+      const dateKey = task.date ? task.date : '날짜 없음';
+      if (!groupedByDate[dateKey]) groupedByDate[dateKey] = [];
+      groupedByDate[dateKey].push(task);
+    });
 
-      div.innerHTML = `
-        <strong>${highlighted(task.title)}</strong> 
-        (${task.deadline ? "마감" : task.status.toUpperCase()})
-        <br>
-        <span class="detail">${highlighted(task.detail || "")}</span>
-      `;
-      searchContainer.appendChild(div);
+    // ▼▼▼ 날짜별로 검색 결과 출력 ▼▼▼
+    Object.keys(groupedByDate).sort().forEach(date => {
+      const dateHeader = document.createElement("h3");
+      dateHeader.textContent = `📅 ${date}`;
+      dateHeader.style.marginTop = "20px";
+      searchContainer.appendChild(dateHeader);
+
+      // 날짜별 카드 묶는 div 생성 (flex container)
+      const cardGroup = document.createElement("div");
+      cardGroup.style.display = "flex";
+      cardGroup.style.gap = "10px";
+      cardGroup.style.flexWrap = "wrap";
+
+      groupedByDate[date].forEach(task => {
+        const div = document.createElement("div");
+        div.classList.add("card");
+        div.style.flex = "0 0 auto";
+
+        div.innerHTML = `
+          <strong>${highlighted(task.title)}</strong> 
+          (${task.deadline ? "마감" : task.status.toUpperCase()})
+          <br>
+          <span class="detail">${highlighted(task.detail || "")}</span>
+        `;
+        cardGroup.appendChild(div);
+      });
+
+      searchContainer.appendChild(cardGroup);
     });
   });
 }
