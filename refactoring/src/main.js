@@ -7,14 +7,16 @@ import { setupSearch } from './search.js';
 import { initTaskManager, initDeadlineManager } from './tasks.js';
 import { initKanban } from './kanban.js';
 
+// 전역 변수
 export let currentDate = new Date();
+
 export let tasks = JSON.parse(localStorage.getItem("Tasks")) || [
   { id: 1, title: "디자인 시안 확정", type: "디자인", date: formatDate(currentDate), status: "todo", deadline: true, dueDate: "2025-08-01" },
   { id: 2, title: "메인 페이지 CSS 작업", type: "개발", date: formatDate(currentDate), status: "doing", deadline: false },
   { id: 3, title: "리팩토링 회의록 정리", type: "기획", date: formatDate(currentDate), status: "done", deadline: false }
 ];
 
-// tasks 수정 후 저장 및 전체 다시 렌더링하는 함수
+// 데이터 저장 후 전체 렌더링
 export function saveAndRender() {
   localStorage.setItem('Tasks', JSON.stringify(tasks));
   renderCalendar(tasks, currentDate, handleDateClick);
@@ -24,13 +26,13 @@ export function saveAndRender() {
   initTaskManager(tasks, formatDate(currentDate), saveAndRender);
 }
 
-// tasks 삭제 함수 (kanban.js에서 호출)
+// 할 일 삭제 함수
 export function deleteTaskById(id) {
   tasks = tasks.filter(t => t.id !== id);
   saveAndRender();
 }
 
-// tasks 상태 변경 함수 (kanban.js에서 호출)
+// 할 일 상태 변경 함수
 export function updateTaskStatus(id, newStatus) {
   const task = tasks.find(t => t.id === id);
   if (task) {
@@ -39,38 +41,26 @@ export function updateTaskStatus(id, newStatus) {
   }
 }
 
+// 날짜 선택 처리 (달력 클릭)
 function handleDateClick(clickedDateStr) {
   currentDate = new Date(clickedDateStr);
   saveAndRender();
 }
 
+// 월 단위 이동 (달력)
 function handleMonthChange(direction) {
   currentDate.setMonth(currentDate.getMonth() + direction);
   saveAndRender();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// 일 단위 이동 (TODO, DOING, DONE, 대시보드)
+function handleDayChange(direction) {
+  currentDate.setDate(currentDate.getDate() + direction);
   saveAndRender();
-  setupFooterInteraction();
-  setupNavigation(tasks, currentDate);
-  setupCalendarControls(handleMonthChange);
-  setupSearch(tasks);
-  setupDashboardInteractions();
   updateDayLabels();
+}
 
-  // 마감 업무 추가 기능 초기화
-  initDeadlineManager(tasks, saveAndRender);
-
-  if (!sessionStorage.getItem('alertShown')) {
-    const upcomingTasks = getUpcomingTasks(tasks);
-    if (upcomingTasks.length > 0) {
-      const alertPopup = document.getElementById("alertPopup");
-      if (alertPopup) alertPopup.style.display = "flex";
-      sessionStorage.setItem('alertShown', 'true');
-    }
-  }
-});
-
+// 날짜 텍스트 업데이트
 function updateDayLabels() {
   const labels = [
     { id: "todoDayLabel" },
@@ -88,3 +78,42 @@ function updateDayLabels() {
     if (el) el.textContent = `${month}월 ${day}일`;
   });
 }
+
+// 초기화, 이벤트 연결 부분
+document.addEventListener("DOMContentLoaded", () => {
+  saveAndRender();
+
+  setupFooterInteraction();
+  setupNavigation(tasks, currentDate);
+  setupCalendarControls(handleMonthChange);
+  setupSearch(tasks);
+  setupDashboardInteractions();
+
+  updateDayLabels();
+
+  // 마감 업무 추가 기능 초기화
+  initDeadlineManager(tasks, saveAndRender);
+
+  // TODO/DOING/DONE 각 페이지 날짜기준 삭제 및 다음 버튼 이벤트 연결
+  document.querySelectorAll(".prevDayBtn").forEach(button => {
+    if (!button.closest("#dashboard")) {
+    button.addEventListener("click", () => handleDayChange(-1));
+    }
+});
+
+  document.querySelectorAll(".nextDayBtn").forEach(button => {
+    if (!button.closest("dashboard")) {
+    button.addEventListener("click", () => handleDayChange(1));
+    }
+});
+
+  // 알림 팝업 한번만 보여주기
+  if (!sessionStorage.getItem('alertShown')) {
+    const upcomingTasks = getUpcomingTasks(tasks);
+    if (upcomingTasks.length > 0) {
+      const alertPopup = document.getElementById("alertPopup");
+      if (alertPopup) alertPopup.style.display = "flex";
+      sessionStorage.setItem('alertShown', 'true');
+    }
+  }
+});
