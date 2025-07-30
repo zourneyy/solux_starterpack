@@ -10,18 +10,27 @@ import { initKanban } from './kanban.js';
 
 // 전역 변수
 export let currentDate = new Date();
-
 export let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
 
-// 데이터 저장 후 전체 렌더링
+// 전체 UI 갱신 함수 (초기 렌더 및 데이터 변경 시)
 export function saveAndRender() {
-  tasks = JSON.parse(localStorage.getItem("Tasks")) || []; // 여기에 최신 데이터 항상 불러오기
+  tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
   localStorage.setItem('Tasks', JSON.stringify(tasks));
+
+  renderCalendar(tasks, currentDate, handleDateClick, formatDate(currentDate));
+  renderCalendarSidebar(tasks, formatDate(currentDate));
+  renderDashboard(tasks, currentDate);
+
+  initKanban(tasks, formatDate(currentDate));
+  // initTaskManager 호출은 제거 (초기화용 함수이므로)
+}
+
+// 카드 추가 후 UI만 갱신하는 콜백 함수
+function onCardCreated() {
   renderCalendar(tasks, currentDate, handleDateClick, formatDate(currentDate));
   renderCalendarSidebar(tasks, formatDate(currentDate));
   renderDashboard(tasks, currentDate);
   initKanban(tasks, formatDate(currentDate));
-  initTaskManager(tasks, formatDate(currentDate));
 }
 
 // 할 일 삭제 함수
@@ -35,8 +44,13 @@ export function deleteTaskById(id) {
 export function updateTaskStatus(id, newStatus) {
   const task = tasks.find(t => t.id === id);
   if (task) {
+    console.log(`Changing status of task ${id} from ${task.status} to ${newStatus}`);
     task.status = newStatus;
+    // 여기서 반드시 localStorage 저장
+    localStorage.setItem('Tasks', JSON.stringify(tasks));
     saveAndRender();
+  } else {
+    console.warn(`Task ${id} not found for status update`);
   }
 }
 
@@ -78,9 +92,12 @@ function updateDayLabels() {
   });
 }
 
-// 초기화, 이벤트 연결 부분
+// 초기화 및 이벤트 연결
 document.addEventListener("DOMContentLoaded", () => {
   saveAndRender();
+
+  // tasks.js의 초기화는 최초 한번만, 콜백 전달
+  initTaskManager(tasks, formatDate(currentDate), onCardCreated);
 
   setupFooterInteraction();
   setupNavigation(tasks, currentDate);
@@ -94,18 +111,17 @@ document.addEventListener("DOMContentLoaded", () => {
   initDeadlineManager(tasks, saveAndRender);
 
   // TODO/DOING/DONE 각 페이지 날짜기준 삭제 및 다음 버튼 이벤트 연결
-document.querySelectorAll(".prevDayBtn").forEach(button => {
-  if (!button.closest("#dashboard")) {
-    button.addEventListener("click", () => handleDayChange(-1));
-  }
-});
+  document.querySelectorAll(".prevDayBtn").forEach(button => {
+    if (!button.closest("#dashboard")) {
+      button.addEventListener("click", () => handleDayChange(-1));
+    }
+  });
 
-document.querySelectorAll(".nextDayBtn").forEach(button => {
-  if (!button.closest("#dashboard")) {
-    button.addEventListener("click", () => handleDayChange(1));
-  }
-});
-
+  document.querySelectorAll(".nextDayBtn").forEach(button => {
+    if (!button.closest("#dashboard")) {
+      button.addEventListener("click", () => handleDayChange(1));
+    }
+  });
 
   // 알림 팝업 한번만 보여주기
   if (!sessionStorage.getItem('alertShown')) {
