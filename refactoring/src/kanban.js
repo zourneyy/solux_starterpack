@@ -1,9 +1,11 @@
 // kanban.js
 import { deleteTaskById, updateTaskStatus } from './main.js';
+import { formatDate } from './utils.js';
 
 let tasks = [];
 let draggedCard = null;
 let selectedDateFromMain = null;
+let isDragDropSetup = false; // 중복 이벤트 등록 방지
 
 // 초기화: tasks는 main.js에서 직접 관리되므로 참조만 저장
 export function initKanban(taskList, currentDateStr) {
@@ -17,9 +19,13 @@ export function renderCards() {
   const columns = document.querySelectorAll(".kanban-column");
   columns.forEach(col => (col.innerHTML = ""));
 
+  console.log("Kanban - rendering cards for date:", selectedDateFromMain);
+
   tasks
-    .filter(t => !t.deadline && t.date === selectedDateFromMain)
+    .filter(t => !t.deadline && formatDate(new Date(t.date)) === selectedDateFromMain)
     .forEach(task => {
+      console.log(`Rendering task id:${task.id}, status:${task.status}, date:${task.date}`);
+
       const card = document.createElement("div");
       card.className = "card";
       card.setAttribute("draggable", true);
@@ -48,6 +54,9 @@ export function renderCards() {
 }
 
 function setupDragAndDrop() {
+  if (isDragDropSetup) return; // 중복 방지
+  isDragDropSetup = true;
+
   const columns = document.querySelectorAll(".kanban-column");
 
   columns.forEach(col => {
@@ -61,7 +70,9 @@ function setupDragAndDrop() {
 
   document.querySelectorAll(".next-stage-dropzone, .prev-stage-dropzone").forEach(zone => {
     zone.addEventListener("dragover", e => e.preventDefault());
-    zone.addEventListener("drop", () => {
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+
       if (!draggedCard) return;
       const id = Number(draggedCard.dataset.id);
 
