@@ -1,3 +1,4 @@
+// dashboard.js
 import { formatDate, getUpcomingTasks } from './utils.js';
 
 // 1. 렌더링 함수: 데이터를 화면에 그리는 역할

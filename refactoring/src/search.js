@@ -1,3 +1,4 @@
+// search.js
 // 검색 기능 설정 함수
 export function setupSearch(tasks) {
   const searchInput = document.getElementById("searchInput");

@@ -1,3 +1,4 @@
+// main.js
 import { renderDashboard, setupDashboardInteractions } from './dashboard.js';
 import { setupFooterInteraction } from './fixedbar.js';
 import { setupNavigation } from './navigation.js';
@@ -10,25 +11,23 @@ import { initKanban } from './kanban.js';
 // 전역 변수
 export let currentDate = new Date();
 
-export let tasks = JSON.parse(localStorage.getItem("Tasks")) || [
-  { id: 1, title: "디자인 시안 확정", type: "디자인", date: formatDate(currentDate), status: "todo", deadline: true, dueDate: "2025-08-01" },
-  { id: 2, title: "메인 페이지 CSS 작업", type: "개발", date: formatDate(currentDate), status: "doing", deadline: false },
-  { id: 3, title: "리팩토링 회의록 정리", type: "기획", date: formatDate(currentDate), status: "done", deadline: false }
-];
+export let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
 
 // 데이터 저장 후 전체 렌더링
 export function saveAndRender() {
+  tasks = JSON.parse(localStorage.getItem("Tasks")) || []; // 여기에 최신 데이터 항상 불러오기
   localStorage.setItem('Tasks', JSON.stringify(tasks));
   renderCalendar(tasks, currentDate, handleDateClick);
   renderCalendarSidebar(tasks, formatDate(currentDate));
   renderDashboard(tasks, currentDate);
   initKanban(tasks, formatDate(currentDate));
-  initTaskManager(tasks, formatDate(currentDate), saveAndRender);
+  initTaskManager(tasks, formatDate(currentDate));
 }
 
 // 할 일 삭제 함수
 export function deleteTaskById(id) {
   tasks = tasks.filter(t => t.id !== id);
+  localStorage.setItem('Tasks', JSON.stringify(tasks));
   saveAndRender();
 }
 
@@ -95,17 +94,18 @@ document.addEventListener("DOMContentLoaded", () => {
   initDeadlineManager(tasks, saveAndRender);
 
   // TODO/DOING/DONE 각 페이지 날짜기준 삭제 및 다음 버튼 이벤트 연결
-  document.querySelectorAll(".prevDayBtn").forEach(button => {
-    if (!button.closest("#dashboard")) {
+document.querySelectorAll(".prevDayBtn").forEach(button => {
+  if (!button.closest("#dashboard")) {
     button.addEventListener("click", () => handleDayChange(-1));
-    }
+  }
 });
 
-  document.querySelectorAll(".nextDayBtn").forEach(button => {
-    if (!button.closest("dashboard")) {
+document.querySelectorAll(".nextDayBtn").forEach(button => {
+  if (!button.closest("#dashboard")) {
     button.addEventListener("click", () => handleDayChange(1));
-    }
+  }
 });
+
 
   // 알림 팝업 한번만 보여주기
   if (!sessionStorage.getItem('alertShown')) {
