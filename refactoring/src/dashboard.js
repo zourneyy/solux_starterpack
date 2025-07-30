@@ -33,7 +33,7 @@ if (upcomingList) {
   const progressCircle = document.getElementById("overallProgress");
   const remainingCount = document.getElementById("remainingTasksCount");
   const total = tasks.filter(t => !t.deadline).length;
-  const done = tasks.filter(t => !t.deadline && t.status === "DONE").length;
+  const done = tasks.filter(t => !t.deadline && t.status === "done").length;
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
   if (progressCircle) {
@@ -44,9 +44,9 @@ if (upcomingList) {
   
   // ---- 4. 하단 바 전체 업데이트 ----
   const tasksForDay = tasks.filter(t => !t.deadline && t.date === formatDate(currentDate));
-  const todoCount = tasksForDay.filter(t => t.status === 'TODO').length;
-  const doingCount = tasksForDay.filter(t => t.status === 'DOING').length;
-  const doneCountDay = tasksForDay.filter(t => t.status === 'DONE').length;
+  const todoCount = tasksForDay.filter(t => t.status === 'todo').length;
+  const doingCount = tasksForDay.filter(t => t.status === 'doing').length;
+  const doneCountDay = tasksForDay.filter(t => t.status === 'done').length;
   const totalDayTasks = tasksForDay.length;
   const remainingDayTasks = totalDayTasks - doneCountDay;
 
@@ -65,7 +65,7 @@ if (upcomingList) {
   }
   
   const allProjectTasks = tasks.filter(t => !t.deadline);
-  const allDoneTasks = allProjectTasks.filter(t => t.status === 'DONE').length;
+  const allDoneTasks = allProjectTasks.filter(t => t.status === 'done').length;
   const overallPercent = allProjectTasks.length === 0 ? 0 : Math.round((allDoneTasks / allProjectTasks.length) * 100);
 
   const footerProgressFillEl = document.getElementById('footerProgressFill');
