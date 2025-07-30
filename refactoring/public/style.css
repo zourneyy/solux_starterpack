@@ -569,6 +569,8 @@ footer#statusBar {
   border-radius: 8px;
   outline: none;
   box-sizing: border-box;
+  font-family: "Pretendard", "Arial", sans-serif !important;
+  font-size: 15px
 }
 
 .modal-content textarea {
