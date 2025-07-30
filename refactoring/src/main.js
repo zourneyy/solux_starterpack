@@ -17,7 +17,7 @@ export let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
 export function saveAndRender() {
   tasks = JSON.parse(localStorage.getItem("Tasks")) || []; // 여기에 최신 데이터 항상 불러오기
   localStorage.setItem('Tasks', JSON.stringify(tasks));
-  renderCalendar(tasks, currentDate, handleDateClick);
+  renderCalendar(tasks, currentDate, handleDateClick, formatDate(currentDate));
   renderCalendarSidebar(tasks, formatDate(currentDate));
   renderDashboard(tasks, currentDate);
   initKanban(tasks, formatDate(currentDate));

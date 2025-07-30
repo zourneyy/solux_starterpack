@@ -104,9 +104,14 @@ header input {
   position: relative;
 }
 .calendar-cell.today {
-  background: black;
+  background: #70a5ff;
   color: white;
   font-weight: bold;
+}
+.calendar-cell.selected {
+  border: 2px solid #dc665b;
+  background: #f8e7e1;
+  color: #222;
 }
 .calendar-cell .deadline-marker {
   position: absolute;
