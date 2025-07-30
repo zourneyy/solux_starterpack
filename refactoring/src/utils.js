@@ -25,7 +25,7 @@ export function getUpcomingTasks(tasks) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return tasks
-    .filter(t => t.dueDate && t.status !== "DONE")
+    .filter(t => t.dueDate && t.status !== "done")
     .map(t => ({ ...t, dDay: Math.ceil((new Date(t.dueDate) - today) / (1000 * 60 * 60 * 24)) }))
     .filter(t => t.dDay >= 0 && t.dDay <= 7)
     .sort((a, b) => a.dDay - b.dDay);
