@@ -14,13 +14,11 @@ export let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
 
 // 전체 UI 갱신 함수 (초기 렌더 및 데이터 변경 시)
 export function saveAndRender() {
-  tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
   localStorage.setItem('Tasks', JSON.stringify(tasks));
 
   renderCalendar(tasks, currentDate, handleDateClick, formatDate(currentDate));
   renderCalendarSidebar(tasks, formatDate(currentDate));
   renderDashboard(tasks, currentDate);
-
   initKanban(tasks, formatDate(currentDate));
 }
 
@@ -35,7 +33,6 @@ function onCardCreated() {
 // 할 일 삭제 함수
 export function deleteTaskById(id) {
   tasks = tasks.filter(t => t.id !== id);
-  localStorage.setItem('Tasks', JSON.stringify(tasks));
   saveAndRender();
 }
 
@@ -45,8 +42,6 @@ export function updateTaskStatus(id, newStatus) {
   if (task) {
     console.log(`Changing status of task ${id} from ${task.status} to ${newStatus}`);
     task.status = newStatus;
-    // 여기서 반드시 localStorage 저장
-    localStorage.setItem('Tasks', JSON.stringify(tasks));
     saveAndRender();
   } else {
     console.warn(`Task ${id} not found for status update`);
@@ -91,6 +86,7 @@ function updateDayLabels() {
   });
 }
 
+// 섹션 화면 표시 처리
 function updatePageVisibility(selectedSectionId) {
   const sections = document.querySelectorAll(".page-section");
   sections.forEach(section => {
@@ -108,7 +104,7 @@ function updatePageVisibility(selectedSectionId) {
     }
   });
 
-  // 버튼 전체 영역 전체 컨트롤
+  // 버튼 영역 제어
   const kanbanButtons = document.querySelector(".kanban-buttons");
   const isKanbanPage = ["todo", "doing", "done"].includes(selectedSectionId);
   if (kanbanButtons) {
@@ -134,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 마감 업무 추가 기능 초기화
   initDeadlineManager(tasks, saveAndRender);
 
-  // TODO/DOING/DONE 각 페이지 날짜기준 삭제 및 다음 버튼 이벤트 연결
+  // 이전/다음 날짜 버튼 연결
   document.querySelectorAll(".prevDayBtn").forEach(button => {
     if (!button.closest("#dashboard")) {
       button.addEventListener("click", () => handleDayChange(-1));
@@ -147,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // 메뉴 클릭 시 섹션 변경
   document.querySelectorAll(".menu li").forEach(menuItem => {
     menuItem.addEventListener("click", () => {
       const sectionId = menuItem.getAttribute("data-section");
@@ -155,18 +152,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  //저장된 섹션 ID 있으면 그걸로 보여줌
+  // 저장된 섹션 ID 불러오기
   const savedSection = localStorage.getItem("selectedSectionId");
   updatePageVisibility(savedSection || "calendar");
 
+  // 메뉴 active 표시
   document.querySelectorAll(".menu li").forEach(menuItem => {
     menuItem.classList.remove("active");
     if (menuItem.getAttribute("data-section") === savedSection) {
       menuItem.classList.add("active");
     }
   });
-  
-  // 알림 팝업 한번만 보여주기
+
+  // 알림 팝업 표시 (세션 중 1회)
   if (!sessionStorage.getItem('alertShown')) {
     const upcomingTasks = getUpcomingTasks(tasks);
     if (upcomingTasks.length > 0) {
