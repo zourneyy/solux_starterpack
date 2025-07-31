@@ -9,7 +9,17 @@ import { initTaskManager, initDeadlineManager } from './tasks.js';
 import { initKanban } from './kanban.js';
 
 export let currentDate = new Date();
-export let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
+
+// 로컬스토리지에서 tasks 불러올 때 deadline 필드가 없으면 false로 보정 적용
+export let tasks = (() => {
+  const rawTasks = JSON.parse(localStorage.getItem("Tasks")) || [];
+  rawTasks.forEach(task => {
+    if (!('deadline' in task)) {
+      task.deadline = false;
+    }
+  });
+  return rawTasks;
+})();
 
 // 전체 UI 갱신 함수 (초기 렌더 및 데이터 변경 시)
 export function saveAndRender() {
@@ -20,7 +30,6 @@ export function saveAndRender() {
   renderDashboard(tasks, currentDate);
   initKanban(tasks, formatDate(currentDate));
 
-  // 하단바 '오늘 진행 상황'은 시스템 현재 날짜 기준으로 고정 업데이트
   updateFooterStatusCounts(tasks);
 }
 
@@ -51,6 +60,7 @@ export function updateTaskStatus(id, newStatus) {
     console.warn(`Task ${id} not found for status update`);
   }
 }
+
 
 // 날짜 선택 처리 (달력 클릭)
 function handleDateClick(clickedDateStr) {
