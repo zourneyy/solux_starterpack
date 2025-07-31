@@ -4,43 +4,58 @@ body {
   background-color: #f9f9f9;
 }
 
+/* 메뉴 바 전체 정렬 */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 10px 40px;
   background-color: #cde4f7;
-  border-bottom: 2px solid #ddd;
 }
 
+/* 로고 */
 .logo {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: bold;
 }
 
-header input {
-  padding: 5px;
-  width: 300px;
-  border: 1px solid #aaa;
-  border-radius: 5px;
+/* 검색창 */
+#searchInput {
+  width: 550px;
+  margin: 0 20px;
+  padding: 6px 12px;
+  font-size: 14px;
 }
 
+/* 네비게이션 영역 */
+nav {
+  flex-shrink: 0;
+}
+
+/* 메뉴 목록 (가로 정렬 + 가운데 정렬) */
 .menu {
   list-style: none;
   display: flex;
   gap: 20px;
   padding: 0;
   margin: 0;
+  align-items: center;
 }
 
+/* 메뉴 항목 */
 .menu li {
   cursor: pointer;
   font-weight: bold;
+  padding: 6px 10px;
+  transition: color 0.3s, border-bottom 0.3s;
 }
+
+/* 활성화된 메뉴 */
 .menu li.active {
   color: #007bff;
   border-bottom: 2px solid #007bff;
 }
+
 
 .page-section {
   display: none;
@@ -699,6 +714,10 @@ footer#statusBar {
   margin-top: 4px;
   border-radius: 3px;
   transition: background-color 0.3s ease;
+
+  width: 70%;          /* 길이 축소 */
+  margin-left: auto;   /* 좌우 가운데 정렬 */
+  margin-right: auto;
 }
 
 /*검색 기능 하이라이트 표시*/
