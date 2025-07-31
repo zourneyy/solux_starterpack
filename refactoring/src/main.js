@@ -92,6 +92,31 @@ function updateDayLabels() {
   });
 }
 
+function updatePageVisibility(selectedSectionId) {
+  const sections = document.querySelectorAll(".page-section");
+  sections.forEach(section => {
+    section.classList.remove("active", "calendar-page", "dashboard-page", "kanban-page");
+    if (section.id === selectedSectionId) {
+      section.classList.add("active");
+
+      if (["todo", "doing", "done"].includes(selectedSectionId)) {
+        section.classList.add("kanban-page");
+      } else if (selectedSectionId === "calendar") {
+        section.classList.add("calendar-page");
+      } else if (selectedSectionId === "dashboard") {
+        section.classList.add("dashboard-page");
+      }
+    }
+  });
+
+  // ✅ 버튼 전체 영역 통째로 컨트롤
+  const kanbanButtons = document.querySelector(".kanban-buttons");
+  const isKanbanPage = ["todo", "doing", "done"].includes(selectedSectionId);
+  if (kanbanButtons) {
+    kanbanButtons.style.display = isKanbanPage ? "flex" : "none";
+  }
+}
+
 // 초기화 및 이벤트 연결
 document.addEventListener("DOMContentLoaded", () => {
   saveAndRender();
@@ -122,6 +147,17 @@ document.addEventListener("DOMContentLoaded", () => {
       button.addEventListener("click", () => handleDayChange(1));
     }
   });
+
+  document.querySelectorAll(".menu li").forEach(menuItem => {
+    menuItem.addEventListener("click", () => {
+      const sectionId = menuItem.getAttribute("data-section");
+      updatePageVisibility(sectionId);
+    });
+  });
+
+    // 초기 진입 시 버튼 표시 여부 설정
+    const initialSection = document.querySelector(".menu li.active")?.getAttribute("data-section");
+    updatePageVisibility(initialSection || "calendar");
 
   // 알림 팝업 한번만 보여주기
   if (!sessionStorage.getItem('alertShown')) {

@@ -144,8 +144,10 @@
     </div>
   </footer>
 
-  <!-- 떠다니는 카드 추가 버튼 -->
+<div class="kanban-buttons">
   <button id="addCardBtn" class="floating-add-btn">+</button>
+  <div id="trashZone" class="trash-zone hidden">🗑️</div>
+</div>
 
   <!-- 카드 추가 모달 -->
   <div id="addCardModal" class="modal hidden">
@@ -182,9 +184,6 @@
       <button id="cancelDeadlineBtn">취소</button>
     </div>
   </div>
-
-  <!-- 휴지통 영역 -->
-  <div id="trashZone" class="trash-zone hidden">🗑️</div>
 
   <script type="module" src="../src/main.js"></script>
 </body>
