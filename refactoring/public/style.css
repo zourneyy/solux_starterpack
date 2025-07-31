@@ -706,3 +706,9 @@ footer#statusBar {
   color: red;
   font-weight: bold;
 }
+
+.card .deadline.red-small {
+  font-size: 12px;
+  color: red;
+  margin-top: 8px;
+}
