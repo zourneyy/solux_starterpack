@@ -16,16 +16,14 @@ export function initKanban(taskList, currentDateStr) {
 
 /**
  * 카드가 선택된 날짜에 보일지 여부 판단 (선택날짜가 task.date ~ task.dueDate 사이에 있으면 true)
- * done 상태인 카드는 표시 안 함
+ * 상태 관계없이, 기간 내에 있는 카드만 표시
  */
 function isCardVisibleOn(selectedDateStr, task) {
-  if (task.status === 'done') return false; // done 인 카드는 전부 제외
-
   if (task.dueDate) {
     // dueDate 있을 때, 기간 내에 있으면 표시
     return selectedDateStr >= task.date && selectedDateStr <= task.dueDate;
   }
-  // dueDate 없으면 날짜 일치 여부 + done 제외
+  // dueDate 없으면 날짜 일치 여부
   return selectedDateStr === task.date;
 }
 
@@ -94,7 +92,8 @@ function setupDragAndDrop() {
     col.addEventListener("drop", () => {
       if (!draggedCard) return;
       const id = Number(draggedCard.dataset.id);
-      updateTaskStatus(id, col.dataset.status);
+      updateTaskStatus(id, col.dataset.status); // 상태 변경
+      draggedCard = null;
     });
   });
 
@@ -116,6 +115,7 @@ function setupDragAndDrop() {
 
       if (Math.abs(currentIndex - targetIndex) === 1) {
         updateTaskStatus(id, targetStatus);
+        draggedCard = null;
       }
     });
   });
