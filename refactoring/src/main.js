@@ -151,14 +151,22 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".menu li").forEach(menuItem => {
     menuItem.addEventListener("click", () => {
       const sectionId = menuItem.getAttribute("data-section");
+      localStorage.setItem("selectedSectionId", sectionId);
       updatePageVisibility(sectionId);
     });
   });
 
-    // 초기 진입 시 버튼 표시 여부 설정
-    const initialSection = document.querySelector(".menu li.active")?.getAttribute("data-section");
-    updatePageVisibility(initialSection || "calendar");
+  //저장된 섹션 ID 있으면 그걸로 보여줌
+  const savedSection = localStorage.getItem("selectedSectionId");
+  updatePageVisibility(savedSection || "calendar");
 
+  document.querySelectorAll(".menu li").forEach(menuItem => {
+    menuItem.classList.remove("active");
+    if (menuItem.getAttribute("data-section") === savedSection) {
+      menuItem.classList.add("active");
+    }
+  });
+  
   // 알림 팝업 한번만 보여주기
   if (!sessionStorage.getItem('alertShown')) {
     const upcomingTasks = getUpcomingTasks(tasks);
