@@ -22,7 +22,6 @@ export function saveAndRender() {
   renderDashboard(tasks, currentDate);
 
   initKanban(tasks, formatDate(currentDate));
-  // initTaskManager 호출은 제거 (초기화용 함수이므로)
 }
 
 // 카드 추가 후 UI만 갱신하는 콜백 함수

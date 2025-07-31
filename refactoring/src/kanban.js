@@ -7,7 +7,6 @@ let draggedCard = null;
 let selectedDateFromMain = null;
 let isDragDropSetup = false; // 중복 이벤트 등록 방지
 
-// 초기화: tasks는 main.js에서 직접 관리되므로 참조만 저장
 export function initKanban(taskList, currentDateStr) {
   tasks = taskList;
   selectedDateFromMain = currentDateStr;
@@ -15,66 +14,70 @@ export function initKanban(taskList, currentDateStr) {
   setupDragAndDrop();
 }
 
+/**
+ * 카드가 선택된 날짜에 보일지 여부 판단 (선택날짜가 task.date ~ task.dueDate 사이에 있으면 true)
+ * done 상태인 카드는 표시 안 함
+ */
+function isCardVisibleOn(selectedDateStr, task) {
+  if (task.status === 'done') return false; // done 인 카드는 전부 제외
+
+  if (task.dueDate) {
+    // dueDate 있을 때, 기간 내에 있으면 표시
+    return selectedDateStr >= task.date && selectedDateStr <= task.dueDate;
+  }
+  // dueDate 없으면 날짜 일치 여부 + done 제외
+  return selectedDateStr === task.date;
+}
+
 export function renderCards() {
   const columns = document.querySelectorAll(".kanban-column");
   columns.forEach(col => (col.innerHTML = ""));
 
+  // console.log 디버깅용
   console.log("Kanban - rendering cards for date:", selectedDateFromMain);
 
   tasks
-  .filter(t => {
-    const today = new Date(selectedDateFromMain);
-    const taskDate = new Date(t.date);
-    const deadline = t.deadline ? new Date(t.deadline) : null;
+    .filter(task => isCardVisibleOn(selectedDateFromMain, task))
+    .forEach(task => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.setAttribute("draggable", true);
+      card.dataset.id = task.id;
 
-    if (!deadline) {
-      // 마감일이 없으면 오늘 날짜와 정확히 일치하는 경우만 보여줌
-      return formatDate(taskDate) === selectedDateFromMain;
-    }
-
-    // 마감일이 있으면 시작일 ≤ 오늘 ≤ 마감일인 경우 보여줌
-    return taskDate <= today && today <= deadline;
-  })
-  .forEach(task => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.setAttribute("draggable", true);
-    card.dataset.id = task.id;
-
-    // D-Day 계산 함수 호출
-    const deadlineText = task.deadline ? `
-      <div class="deadline">마감일: ${task.deadline} (${getDDay(task.deadline)})</div>
-    ` : "";
-
-    card.innerHTML = `
+      card.innerHTML = `
   <strong>${task.title}</strong>
   <span class="type">(${task.type})</span>
   <div class="detail">${task.detail || ""}</div>
-  ${task.deadline ? `
-    <div class="deadline red-small">마감일: ${task.deadline} (${getDDay(task.deadline)})</div>
-  ` : ""}
-`;
+  ${
+    task.dueDate
+      ? `<div class="deadline red-small">마감일: ${task.dueDate} (${getDDay(task.dueDate)})</div>`
+      : ""
+  }
+  `;
 
-    card.addEventListener("dragstart", () => {
-      draggedCard = card;
-      card.classList.add("dragging");
-      document.getElementById("trashZone")?.classList.remove("hidden");
+      card.addEventListener("dragstart", () => {
+        draggedCard = card;
+        card.classList.add("dragging");
+        document.getElementById("trashZone")?.classList.remove("hidden");
+      });
+
+      card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+        draggedCard = null;
+        document.getElementById("trashZone")?.classList.add("hidden");
+      });
+
+      const column = document.querySelector(`[data-status="${task.status}"]`);
+      column?.appendChild(card);
     });
-
-    card.addEventListener("dragend", () => {
-      card.classList.remove("dragging");
-      draggedCard = null;
-      document.getElementById("trashZone")?.classList.add("hidden");
-    });
-
-    const column = document.querySelector(`[data-status="${task.status}"]`);
-    column?.appendChild(card);
-  });
 }
 
 function getDDay(deadline) {
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const due = new Date(deadline);
+  due.setHours(0, 0, 0, 0);
+
   const diffTime = due - today;
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays >= 0 ? `D-${diffDays}` : `D+${Math.abs(diffDays)}`;

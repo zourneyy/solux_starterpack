@@ -18,19 +18,37 @@ export function parseDate(dateStr) {
 }
 
 /**
- * 전체 할 일 목록 중 마감일 임박(7일 이내) 업무만 추출
+ * 전체 할 일 목록 중, 마감일 임박(3일 이내) 및 지난 일정 포함
+ * - 상태는 todo 또는 doing 인 것만 포함
  * @param {Array} tasks - 전체 할 일 배열
- * @returns {Array} - 마감 임박 할 일 배열, dDay 프로퍼티 포함
+ * @param {number} maxDay - 최대 임박일 수 (기본 3일)
+ * @returns {Array} - 임박 할 일 배열, dDay 프로퍼티 포함 (음수 = 마감일 지난 상태)
  */
-export function getUpcomingTasks(tasks) {
+export function getUpcomingTasks(tasks, maxDay = 3) {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0); // 오늘 0시 기준
+
   return tasks
-    .filter(t => t.dueDate && t.status !== "done")
-    .map(t => ({
-      ...t,
-      dDay: Math.ceil((new Date(t.dueDate) - today) / (1000 * 60 * 60 * 24))
-    }))
-    .filter(t => t.dDay >= 0 && t.dDay <= 7)
+    .filter(t => 
+      t.dueDate && 
+      (t.status === "todo" || t.status === "doing")
+    )
+    .map(t => {
+      const dueDate = new Date(t.dueDate);
+      const dDay = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));
+      return { ...t, dDay };
+    })
+    .filter(t => t.dDay <= maxDay) // 마감일 초과 일정 제외, 마감 지난 일정 포함
     .sort((a, b) => a.dDay - b.dDay);
+}
+
+/**
+ * dDay 값을 'D-3', 'D-DAY', 'D+1' 등의 형식 문자열로 변환
+ * @param {number} dDay
+ * @returns {string}
+ */
+export function formatDDay(dDay) {
+  if (dDay > 0) return `D-${dDay}`;
+  if (dDay === 0) return "D-DAY";
+  return `D+${Math.abs(dDay)}`;
 }

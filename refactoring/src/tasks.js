@@ -52,7 +52,7 @@ export function initTaskManager(taskList, currentDate, onCardCreated) {
         const status = statusSelect.value.toLowerCase();
         const type = typeSelect.value;
         const date = selectedDate || new Date().toISOString().split("T")[0];
-        const dueDate = document.getElementById("cardDueDateInput").value; // 마감일 입력 필드 가져오기
+        const dueDate = document.getElementById("cardDueDateInput").value; // 마감일 입력 필드 값
 
         if (!title) {
           alert("제목을 입력하세요.");
@@ -66,10 +66,9 @@ export function initTaskManager(taskList, currentDate, onCardCreated) {
           status,
           type,
           date,
-          deadline: false,
-          dueDate: null,
           created: new Date().toISOString(),  // 생성일자 필수 추가
-          deadline: dueDate || null // 마감일 추가
+          dueDate: dueDate || null,           // 마감일 (없으면 null)
+          deadline: Boolean(dueDate)          // 마감일 있으면 true, 없으면 false
         };
 
         tasks.push(newTask);
@@ -84,13 +83,14 @@ export function initTaskManager(taskList, currentDate, onCardCreated) {
         // 입력 필드 초기화
         titleInput.value = "";
         detailInput.value = "";
+        document.getElementById("cardDueDateInput").value = ""; // 마감일 초기화
       });
     }
     isCreateBtnSetup = true;
   }
 }
 
-// 마감 업무 추가 기능
+// 마감 업무 추가 기능 (달력 마감일 별도 기능)
 export function initDeadlineManager(taskList, onUpdate) {
   const addDeadlineBtn = document.getElementById("addDeadlineBtn");
   const modal = document.getElementById("addDeadlineModal");
