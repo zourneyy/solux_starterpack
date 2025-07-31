@@ -1,6 +1,6 @@
 // main.js
 import { renderDashboard, setupDashboardInteractions } from './dashboard.js';
-import { setupFooterInteraction } from './fixedbar.js';
+import { setupFooterInteraction, updateFooterStatusCounts } from './fixedbar.js';
 import { setupNavigation } from './navigation.js';
 import { renderCalendar, setupCalendarControls, renderCalendarSidebar } from './calendar.js';
 import { formatDate, getUpcomingTasks } from './utils.js';
@@ -8,7 +8,6 @@ import { setupSearch } from './search.js';
 import { initTaskManager, initDeadlineManager } from './tasks.js';
 import { initKanban } from './kanban.js';
 
-// 전역 변수
 export let currentDate = new Date();
 export let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
 
@@ -20,6 +19,9 @@ export function saveAndRender() {
   renderCalendarSidebar(tasks, formatDate(currentDate));
   renderDashboard(tasks, currentDate);
   initKanban(tasks, formatDate(currentDate));
+
+  // 하단바 '오늘 진행 상황'은 시스템 현재 날짜 기준으로 고정 업데이트
+  updateFooterStatusCounts(tasks);
 }
 
 // 카드 추가 후 UI만 갱신하는 콜백 함수
@@ -28,6 +30,8 @@ function onCardCreated() {
   renderCalendarSidebar(tasks, formatDate(currentDate));
   renderDashboard(tasks, currentDate);
   initKanban(tasks, formatDate(currentDate));
+
+  updateFooterStatusCounts(tasks);
 }
 
 // 할 일 삭제 함수
@@ -116,7 +120,7 @@ function updatePageVisibility(selectedSectionId) {
 document.addEventListener("DOMContentLoaded", () => {
   saveAndRender();
 
-  // tasks.js의 초기화는 최초 한번만, 콜백 전달
+  // tasks.js 초기화 (콜백 전달)
   initTaskManager(tasks, formatDate(currentDate), onCardCreated);
 
   setupFooterInteraction();
@@ -130,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 마감 업무 추가 기능 초기화
   initDeadlineManager(tasks, saveAndRender);
 
-  // 이전/다음 날짜 버튼 연결
+  // 이전/다음 날짜 버튼 연결 (칸반보드 제외 대시보드)
   document.querySelectorAll(".prevDayBtn").forEach(button => {
     if (!button.closest("#dashboard")) {
       button.addEventListener("click", () => handleDayChange(-1));
@@ -143,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 메뉴 클릭 시 섹션 변경
+  // 메뉴 클릭 시 섹션 변경 이벤트
   document.querySelectorAll(".menu li").forEach(menuItem => {
     menuItem.addEventListener("click", () => {
       const sectionId = menuItem.getAttribute("data-section");
@@ -156,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedSection = localStorage.getItem("selectedSectionId");
   updatePageVisibility(savedSection || "calendar");
 
-  // 메뉴 active 표시
+  // 메뉴 active 표시 업데이트
   document.querySelectorAll(".menu li").forEach(menuItem => {
     menuItem.classList.remove("active");
     if (menuItem.getAttribute("data-section") === savedSection) {

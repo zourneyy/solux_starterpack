@@ -14,16 +14,12 @@ export function initKanban(taskList, currentDateStr) {
   setupDragAndDrop();
 }
 
-/**
- * 카드가 선택된 날짜에 보일지 여부 판단 (선택날짜가 task.date ~ task.dueDate 사이에 있으면 true)
- * 상태 관계없이, 기간 내에 있는 카드만 표시
- */
 function isCardVisibleOn(selectedDateStr, task) {
+  if (task.status === 'done') return false;
+
   if (task.dueDate) {
-    // dueDate 있을 때, 기간 내에 있으면 표시
     return selectedDateStr >= task.date && selectedDateStr <= task.dueDate;
   }
-  // dueDate 없으면 날짜 일치 여부
   return selectedDateStr === task.date;
 }
 
@@ -31,7 +27,6 @@ export function renderCards() {
   const columns = document.querySelectorAll(".kanban-column");
   columns.forEach(col => (col.innerHTML = ""));
 
-  // console.log 디버깅용
   console.log("Kanban - rendering cards for date:", selectedDateFromMain);
 
   tasks
@@ -66,9 +61,14 @@ export function renderCards() {
       });
 
       const column = document.querySelector(`[data-status="${task.status}"]`);
-      column?.appendChild(card);
+      if (column) {
+        column.appendChild(card);
+      } else {
+        console.warn(`Kanban: 컬럼을 찾을 수 없습니다 - status: ${task.status}`);
+      }
     });
 }
+
 
 function getDDay(deadline) {
   const today = new Date();
