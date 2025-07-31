@@ -52,6 +52,7 @@ export function initTaskManager(taskList, currentDate, onCardCreated) {
         const status = statusSelect.value.toLowerCase();
         const type = typeSelect.value;
         const date = selectedDate || new Date().toISOString().split("T")[0];
+        const dueDate = document.getElementById("cardDueDateInput").value; // 마감일 입력 필드 가져오기
 
         if (!title) {
           alert("제목을 입력하세요.");
@@ -68,6 +69,7 @@ export function initTaskManager(taskList, currentDate, onCardCreated) {
           deadline: false,
           dueDate: null,
           created: new Date().toISOString(),  // 생성일자 필수 추가
+          deadline: dueDate || null // 마감일 추가
         };
 
         tasks.push(newTask);

@@ -109,7 +109,7 @@ function updatePageVisibility(selectedSectionId) {
     }
   });
 
-  // ✅ 버튼 전체 영역 통째로 컨트롤
+  // 버튼 전체 영역 전체 컨트롤
   const kanbanButtons = document.querySelector(".kanban-buttons");
   const isKanbanPage = ["todo", "doing", "done"].includes(selectedSectionId);
   if (kanbanButtons) {
