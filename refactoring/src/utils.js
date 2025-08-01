@@ -52,3 +52,25 @@ export function formatDDay(dDay) {
   if (dDay === 0) return "D-DAY";
   return `D+${Math.abs(dDay)}`;
 }
+
+/**
+ * 마감일이 지났는지 확인하고, 지났다면 며칠이 지났는지 텍스트로 반환
+ * @param {string} dueDate - 'YYYY-MM-DD' 형식의 마감일 문자열
+ * @returns {string} - 마감일이 지났으면 '(D+n)' 형태의 문자열, 아니면 빈 문자열
+ */
+export function getOverdueStatusText(dueDate) {
+  if (!dueDate) return '';
+
+  const today = new Date();
+  const a = new Date(today.getFullYear(), today.getMonth(), today.getDate()); // 오늘 날짜 (시간은 00:00:00)
+  const b = new Date(dueDate); // 마감일 날짜
+  
+  // 마감일이 오늘보다 이전이라면 (마감일이 지났다면)
+  if (a > b) {
+    const diffTime = Math.abs(a - b);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return ` (D+${diffDays})`;
+  }
+  
+  return '';
+}
