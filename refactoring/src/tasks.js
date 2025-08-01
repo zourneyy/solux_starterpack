@@ -1,4 +1,5 @@
 // tasks.js
+
 import { saveAndRender } from './main.js';
 
 let tasks;
@@ -52,7 +53,7 @@ export function initTaskManager(taskList, currentDate, onCardCreated) {
         const status = statusSelect.value.toLowerCase();
         const type = typeSelect.value;
         const date = selectedDate || new Date().toISOString().split("T")[0];
-        const dueDate = document.getElementById("cardDueDateInput").value; // 마감일 입력 필드 값
+        const dueDate = document.getElementById("cardDueDateInput").value;
 
         if (!title) {
           alert("제목을 입력하세요.");
@@ -66,31 +67,28 @@ export function initTaskManager(taskList, currentDate, onCardCreated) {
           status,
           type,
           date,
-          created: new Date().toISOString(),  // 생성일자 필수 추가
-          dueDate: dueDate || null,           // 마감일 (없으면 null)
-          deadline: Boolean(dueDate)          // 마감일 있으면 true, 없으면 false
+          created: new Date().toISOString(),
+          dueDate: dueDate || null,
+          deadline: false
         };
 
         tasks.push(newTask);
         localStorage.setItem("Tasks", JSON.stringify(tasks));
 
-        // UI 바로 갱신 콜백 호출
         if (typeof onCardCreatedCallback === "function") onCardCreatedCallback();
 
-        // 모달 닫기
         document.getElementById("addCardModal").classList.add("hidden");
 
-        // 입력 필드 초기화
         titleInput.value = "";
         detailInput.value = "";
-        document.getElementById("cardDueDateInput").value = ""; // 마감일 초기화
+        document.getElementById("cardDueDateInput").value = "";
       });
     }
     isCreateBtnSetup = true;
   }
 }
 
-// 마감 업무 추가 기능 (달력 마감일 별도 기능)
+// 마감 업무 추가 기능
 export function initDeadlineManager(taskList, onUpdate) {
   const addDeadlineBtn = document.getElementById("addDeadlineBtn");
   const modal = document.getElementById("addDeadlineModal");
@@ -131,9 +129,9 @@ export function initDeadlineManager(taskList, onUpdate) {
       status: "todo",
       type: "마감",
       date: dueDate,
-      deadline: true,
+      deadline: true, 
       dueDate,
-      created: new Date().toISOString(),  // 생성일자 필수 추가
+      created: new Date().toISOString(),
     };
 
     taskList.push(newDeadlineTask);

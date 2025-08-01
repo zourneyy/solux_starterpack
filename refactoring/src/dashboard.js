@@ -1,38 +1,30 @@
 // dashboard.js
+
 import { formatDate } from './utils.js';
 
 /**
- * 마감 임박 작업 필터링 함수
- * - todo 또는 doing 상태의 마감 업무 중 오늘 기준 최대 maxDay일 이내 임박한 일정 반환
- * - dDay가 음수인 경우 D+xx로 마감일 지나도 계속 표시
- * @param {Array} tasks 전체 할 일 배열
- * @param {string|null} baseDateStr 기준 날짜 문자열 (없으면 오늘)
- * @param {number} maxDay 최대 임박일 (기본 3일)
- * @returns {Array} dDay 프로퍼티가 추가된 임박 작업 리스트
+ * 마감 임박 작업 필터링 함수 (규칙 변경)
  */
 export function getUpcomingTasks(tasks, baseDateStr = null, maxDay = 3) {
   const today = baseDateStr ? new Date(baseDateStr) : new Date();
 
   return tasks
     .filter(task =>
-      task.deadline === true &&                 // 마감 업무만 정확히 true
-      (task.status === "todo" || task.status === "doing") && // done 제외
-      task.dueDate                             // 마감일 존재
+      // 'deadline: true' 조건을 제거하여, 마감일(dueDate)이 있는 모든 할 일을 대상으로 합니다.
+      (task.status === "todo" || task.status === "doing") &&
+      task.dueDate
     )
     .map(task => {
       const dueDate = new Date(task.dueDate);
-      const diff = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24)); // 일 단위 차이
+      const diff = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));
       return { ...task, dDay: diff };
     })
-    // maxDay 이상 넘어도 마감일 지난(task.dDay < 0) 일정은 계속 보임
-    .filter(task => task.dDay <= maxDay)
-    .sort((a, b) => a.dDay - b.dDay);  // 임박 순 정렬
+    .filter(task => task.dDay <= maxDay) // 마감일이 지났거나 3일 이내인 모든 항목
+    .sort((a, b) => a.dDay - b.dDay);
 }
 
 /**
  * D-day 및 D+day 문자열 포맷
- * @param {number} dDay
- * @returns {string}
  */
 function formatDDay(dDay) {
   if (dDay > 0) return `D-${dDay}`;
@@ -42,8 +34,6 @@ function formatDDay(dDay) {
 
 /**
  * 대시보드 렌더링 함수
- * @param {Array} tasks 전체 할 일 배열
- * @param {Date} currentDate 현재 날짜 객체
  */
 export function renderDashboard(tasks, currentDate) {
   // 1. 날짜 네비게이션 라벨 업데이트
@@ -72,43 +62,52 @@ export function renderDashboard(tasks, currentDate) {
   const distributionChart = document.getElementById("taskDistributionChart");
   if (!distributionChart) return;
 
-  const importanceCount = {};
-  tasks.forEach(task => {
-    if (task.deadline !== true) { // 마감 업무 제외
-      const importance = task.type || "일반";
-      importanceCount[importance] = (importanceCount[importance] || 0) + 1;
+  const nonDeadlineTasks = tasks.filter(task => task.deadline !== true);
+  
+  const importanceCount = { '긴급': 0, '중요': 0, '일반': 0 };
+
+  nonDeadlineTasks.forEach(task => {
+    const importance = task.type || "일반";
+    if (importance in importanceCount) {
+      importanceCount[importance]++;
     }
   });
 
   distributionChart.innerHTML = "";
 
-  for (const [level, count] of Object.entries(importanceCount)) {
-    const total = Object.values(importanceCount).reduce((a, b) => a + b, 0);
-    const percent = total === 0 ? 0 : ((count / total) * 100).toFixed(1);
-
-    const barContainer = document.createElement("div");
-    barContainer.style.marginBottom = "6px";
-
-    const label = document.createElement("span");
-    label.textContent = `${level} (${count}개) `;
-    label.style.fontWeight = "bold";
-
-    const bar = document.createElement("div");
-    bar.style.display = "inline-block";
-    bar.style.height = "14px";
-    bar.style.width = `${percent}%`;
-    bar.style.backgroundColor = "#70a5ff";
-    bar.style.borderRadius = "4px";
-    bar.style.verticalAlign = "middle";
-    bar.style.transition = "width 0.3s ease";
-
-    barContainer.appendChild(label);
-    barContainer.appendChild(bar);
-
-    distributionChart.appendChild(barContainer);
+  if (nonDeadlineTasks.length === 0) {
+    distributionChart.innerHTML = "<li>표시할 할 일이 없습니다.</li>";
+  } else {
+    for (const [level, count] of Object.entries(importanceCount)) {
+      if (count > 0) {
+        const percent = ((count / nonDeadlineTasks.length) * 100).toFixed(1);
+        const barContainer = document.createElement("div");
+        barContainer.style.marginBottom = "6px";
+        barContainer.style.display = 'flex';
+        barContainer.style.alignItems = 'center';
+        const label = document.createElement("span");
+        label.textContent = `${level} (${count}개)`;
+        label.style.fontWeight = "bold";
+        label.style.width = '100px';
+        const barWrapper = document.createElement('div');
+        barWrapper.style.flexGrow = '1';
+        barWrapper.style.backgroundColor = '#e0e0e0';
+        barWrapper.style.borderRadius = '4px';
+        const bar = document.createElement("div");
+        bar.style.height = "14px";
+        bar.style.width = `${percent}%`;
+        bar.style.backgroundColor = "#70a5ff";
+        bar.style.borderRadius = "4px";
+        bar.style.transition = "width 0.3s ease";
+        barWrapper.appendChild(bar);
+        barContainer.appendChild(label);
+        barContainer.appendChild(barWrapper);
+        distributionChart.appendChild(barContainer);
+      }
+    }
   }
 
-  // 4. 전체 진행률 및 남은 업무 수 계산 (마감 업무 제외 전체 기준)
+  // 4. 전체 진행률 및 남은 업무 수 계산
   const progressCircle = document.getElementById("overallProgress");
   const remainingCount = document.getElementById("remainingTasksCount");
   const allNonDeadlineTasks = tasks.filter(t => t.deadline !== true);
@@ -116,11 +115,6 @@ export function renderDashboard(tasks, currentDate) {
   const totalTasks = allNonDeadlineTasks.length;
   const remainingTasks = totalTasks - doneTasks;
   const percent = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
-
-  // 로그 (필요 시 제거)
-  console.log("전체 업무 수 (마감 제외):", totalTasks);
-  console.log("완료된 업무 수:", doneTasks);
-  console.log("계산된 전체 진행률(%):", percent);
 
   if (progressCircle) {
     progressCircle.style.setProperty("--p", `${percent}%`);
@@ -130,36 +124,36 @@ export function renderDashboard(tasks, currentDate) {
     remainingCount.textContent = `${remainingTasks} / ${totalTasks}`;
   }
 
-  // 5. 하단 상태바 ‘오늘 진행 상황’ 업데이트 (오늘 날짜 기준)
-  const todayStr = formatDate(new Date());
-  const tasksForToday = tasks.filter(t => t.deadline !== true && t.date === todayStr);
-  const todoCount = tasksForToday.filter(t => t.status === "todo").length;
-  const doingCount = tasksForToday.filter(t => t.status === "doing").length;
-  const doneCountDay = tasksForToday.filter(t => t.status === "done").length;
-  const totalDayTasks = tasksForToday.length;
-  const remainingDayTasks = totalDayTasks - doneCountDay;
-
-  const statusCountsEl = document.getElementById("statusCounts");
-  if (statusCountsEl) {
-    statusCountsEl.innerHTML = `TODO ${todoCount} | DOING ${doingCount} | DONE ${doneCountDay} | <span class="footer-remaining-tasks">남은 업무 ${remainingDayTasks}/${totalDayTasks}</span>`;
-  }
-
-  // 6. 하단바 촉박 일정 개수
-  const footerUrgentCountEl = document.getElementById("footerUrgentCount");
-  if (footerUrgentCountEl) {
-    if (upcomingTasks.length > 0) {
-      footerUrgentCountEl.innerHTML = `<span class="footer-urgent-count">${upcomingTasks.length}개</span>`;
-    } else {
-      footerUrgentCountEl.textContent = "0개";
-    }
-  }
-
-  // 7. 하단바 전체 진행률 (마감 업무 제외)
-  const footerProgressFillEl = document.getElementById("footerProgressFill");
-  const footerProgressPercentEl = document.getElementById("footerProgressPercent");
-  if (footerProgressFillEl) footerProgressFillEl.style.width = `${percent}%`;
-  if (footerProgressPercentEl) footerProgressPercentEl.textContent = `${percent}%`;
+  // 하단 바 업데이트 로직
+  updateFooterBars(tasks, upcomingTasks, percent);
 }
+
+// 하단 바 업데이트 로직을 별도 함수로 분리
+function updateFooterBars(tasks, upcomingTasks, overallPercent) {
+    const todayStr = formatDate(new Date());
+    const tasksForToday = tasks.filter(t => t.deadline !== true && t.date === todayStr);
+    const todoCount = tasksForToday.filter(t => t.status === "todo").length;
+    const doingCount = tasksForToday.filter(t => t.status === "doing").length;
+    const doneCountDay = tasksForToday.filter(t => t.status === "done").length;
+    const totalDayTasks = tasksForToday.length;
+    const remainingDayTasks = totalDayTasks - doneCountDay;
+
+    const statusCountsEl = document.getElementById("statusCounts");
+    if (statusCountsEl) {
+        statusCountsEl.innerHTML = `TODO ${todoCount} | DOING ${doingCount} | DONE ${doneCountDay} | <span class="footer-remaining-tasks">남은 업무 ${remainingDayTasks}/${totalDayTasks}</span>`;
+    }
+
+    const footerUrgentCountEl = document.getElementById("footerUrgentCount");
+    if (footerUrgentCountEl) {
+        footerUrgentCountEl.innerHTML = `<span class="footer-urgent-count">${upcomingTasks.length}개</span>`;
+    }
+
+    const footerProgressFillEl = document.getElementById("footerProgressFill");
+    const footerProgressPercentEl = document.getElementById("footerProgressPercent");
+    if (footerProgressFillEl) footerProgressFillEl.style.width = `${overallPercent}%`;
+    if (footerProgressPercentEl) footerProgressPercentEl.textContent = `${overallPercent}%`;
+}
+
 
 /**
  * 대시보드 이벤트 설정 함수 (팝업 등)
