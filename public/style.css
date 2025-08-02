@@ -1,75 +1,733 @@
-:root {
-  --primary-color: #4a90e2;
-  --accent-color: #f5a623;
-  --danger-color: #e24a4a;
-  --font-family: 'Apple SD Gothic Neo', sans-serif;
-}
-
 body {
-  font-family: var(--font-family);
-  margin: 0; padding: 0;
-  background-color: #fafafa;
-  color: #333;
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  background-color: #f9f9f9;
 }
 
-header, footer {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 1rem;
-  text-align: center;
+/* 메뉴 바 전체 정렬 */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 40px;
+  background-color: #cde4f7;
 }
 
-section {
-  margin: 1rem;
+/* 로고 */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
 }
 
-button {
-  background-color: var(--accent-color);
-  border: none;
-  padding: 0.5rem 1rem;
-  color: white;
-  cursor: pointer;
-  border-radius: 4px;
+/* 검색창 */
+#searchInput {
+  width: 550px;
+  margin: 0 20px;
+  padding: 6px 12px;
+  font-size: 14px;
 }
 
-button:hover {
-  background-color: darken(var(--accent-color), 10%);
+/* 네비게이션 영역 */
+nav {
+  flex-shrink: 0;
 }
 
-.badge {
-  background-color: var(--danger-color);
-  color: white;
-  border-radius: 50%;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.8rem;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 16px;
-  background: #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 0.5rem 0;
-}
-
-.progress-bar .progress {
-  height: 100%;
-  background: var(--primary-color);
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-/* 모달/팝업 기본 스타일 */
-.modal, .popup {
-  position: fixed;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  justify-content: center;
+/* 메뉴 목록 (가로 정렬 + 가운데 정렬) */
+.menu {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  padding: 0;
+  margin: 0;
   align-items: center;
 }
 
-/* 기타 공통 유틸 */
-.hidden {
+/* 메뉴 항목 */
+.menu li {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 6px 10px;
+  transition: color 0.3s, border-bottom 0.3s;
+}
+
+/* 활성화된 메뉴 */
+.menu li.active {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+}
+
+
+.page-section {
+  display: none;
+  padding: 20px;
+}
+
+.page-section.active {
+  display: block;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.arrow-btn {
+  background: #70a5ff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  transition: background 0.2s;
+}
+.arrow-btn:hover {
+  background: #5b8fe3;
+}
+
+/* 1. 달력 크기 키우기 */
+.calendar-layout {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#calendarContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 700px;
+  width: 100%;
+}
+
+.calendar-cell {
+  border: 1px solid #ddd;
+  padding: 8px 0;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #fafafa;
+  position: relative;
+}
+.calendar-cell.today {
+  background: #70a5ff;
+  color: white;
+  font-weight: bold;
+}
+.calendar-cell.selected {
+  border: 2px solid #dc665b;
+  background: #f8e7e1;
+  color: #222;
+}
+.calendar-cell .deadline-marker {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 3px;
+  background: red;
+  border-radius: 2px;
+  margin-top: 2px;
+}
+
+.calendar-side {
+  width: 300px;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.calendar-side button {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  background-color: #70a5ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+.calendar-side button:hover {
+  background-color: #5b8fe3;
+}
+
+.calendar-side ul {
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+/*달력 요일 부분*/
+.calendar-day-header {
+  background-color: #e1d5d5;  /* 연한 회색 배경 */
+  color: #333;                /* 어두운 글자색 */
+  font-weight: bold;
+  text-align: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+
+/* 칸반보드 */
+.kanban-page .kanban-board {
+  display: flex;
+  gap: 10px;
+}
+
+
+.kanban-column {
+  flex: 1;
+  min-height: 200px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: flex-start;
+}
+.kanban-column.over {
+  background-color: #eef6ff;
+}
+
+.next-stage-dropzone {
+  width: 50px;
+  min-height: 200px;
+  background: #d8e2f0;
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: grab;
+}
+.next-stage-dropzone.over {
+  background: #b3cde3;
+}
+
+.prev-stage-dropzone {
+  width: 50px;
+  min-height: 200px;
+  background: #d8e2f0;
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: grab; 
+}
+.prev-stage-dropzone.over {
+  background: #b3cde3;
+}
+
+.kanban-column {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* 카드 스타일 */
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 12px 16px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: none;
+  transition: background 0.2s ease;
+  font-family: "Pretendard", sans-serif;
+  width: 280px;      /* 기존보다 넓게 */
+  min-height: 150px; /* 높이 여유 있게 */
+  padding: 20px;     /* 내부 여백 증가 */
+  font-size: 20px;
+}
+.card:hover {
+  background-color: #f5f5f5;
+}
+
+.card-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.card-type {
+  font-size: 13px;
+  color: gray;
+  margin-left: 4px;
+}
+
+.card-content {
+  font-size: 14px;
+  margin-top: 6px;
+  color: #333;
+}
+.card .detail {
+  font-size: 0.9em;
+  color: #333;
+  margin-top: 4px;
+}
+.card .delete-btn {
+  float: right;
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+}
+
+
+/* todo, doing, done 페이지 날짜 부분 디자인 */
+.day-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.day-nav button {
+  background: #70a5ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+}
+
+.day-nav button:hover {
+  background: #5b8fe3;
+}
+
+.day-nav h2 {
+  font-size: 1.6rem;
+  font-weight: bold;
+  background-color: #cde4f7;
+  padding: 6px 20px;
+  border-radius: 12px;
+  min-width: 120px;
+  text-align: center;
+  user-select: none;
+  box-shadow: 0 0 6px rgba(0,123,255,0.3);
+}
+
+/* ================================================================ */
+/*                대시보드 / 하단 바 / 팝업 최종 스타일                 */
+/* ================================================================ */
+
+/* --- 대시보드 --- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.dashboard-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9e9e9;
+}
+
+.dashboard-card h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+#upcomingDeadlinesList {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+#upcomingDeadlinesList li {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* 진행률 원형 그래프 */
+.progress-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  background: conic-gradient(#5b9bd5 var(--p, 0%), #efefef 0);
+}
+
+.progress-circle::before {
+  content: "";
+  position: absolute;
+  width: 85%;
+  height: 85%;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.progress-circle span {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- 하단 바 --- */
+footer#statusBar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+  padding: 10px 25px;
+  height: 75px; 
+  color: #333;
+  box-sizing: border-box;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.footer-title {
+  font-size: 13px;
+  color: #555;
+  font-weight: bold;
+}
+
+#statusCounts, #footerUrgentCount {
+  font-size: 15px;
+  color: #333;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#footerProgressBar {
+  width: 200px;
+  height: 12px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#footerProgressFill {
+  height: 100%;
+  background-color: #5b9bd5;
+  border-radius: 6px;
+}
+
+#footerProgressPercent {
+  font-size: 15px;
+  font-weight: bold;
+  color: #5b9bd5;
+}
+
+.footer-remaining-tasks {
+  color: #5b9bd5;
+  font-weight: bold;
+}
+
+.footer-urgent-count {
+  color: #d9534f;
+  font-weight: bold;
+}
+
+/* --- 알림 팝업 --- */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  width: 350px;
+}
+
+.popup-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.popup-content p {
+  font-size: 16px;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+#alertCloseBtn {
+  background-color: #5b9bd5;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+#alertCloseBtn:hover {
+  background-color: #4a8ac9;
+}
+
+/* 떠다니는 + 버튼 */
+.floating-add-btn {
+  position: fixed;
+  bottom: 90px;
+  right: 30px;
+  font-size: 30px;
+  background: #007bff;
+  color: white;
+  border: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 999;
+}
+
+/* 모달 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  background: transparent;  /* 배경 회색 없애기 */
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  width: 400px;
+  max-width: 90vw;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: "Pretendard", sans-serif;
+}
+
+.modal-content label {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  padding: 10px 14px;
+  margin-top: 6px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+  font-family: "Pretendard", "Arial", sans-serif !important;
+  font-size: 15px
+}
+
+.modal-content textarea {
+  height: 100px;
+  resize: none;
+}
+
+.modal-content button {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #333;
+  color: white;
+  margin-top: 12px;
+  transition: background 0.2s ease;
+}
+
+.modal-content button:hover {
+  background: #555;
+}
+
+.modal.hidden { display: none !important;}
+
+/* 휴지통 */
+.trash-zone {
+  position: fixed;
+  bottom: 90px;
+  right: 100px; /* ➕ 버튼 기준 좌측에 위치 */
+  width: 60px;
+  height: 60px;
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: background 0.3s ease;
+  z-index: 1000;
+}
+.trash-zone.drag-over {
+  background: #ff4d4d;
+  color: white;
+}
+
+
+#addCardModal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background: transparent; /* 또는 rgba(0,0,0,0.4) 넣어도 됨 */
+}
+
+#addCardModal h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+#addCardModal label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+  align-items: center;
+}
+
+#addCardModal input,
+#addCardModal textarea {
+  width: 100%;
+  padding: 10px 14px;
+  margin-top: 6px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  resize: none;
+  box-sizing: border-box;
+}
+
+#addCardModal textarea {
+  height: 100px;
+}
+
+#addCardModal button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #333;
+  color: white;
+  transition: background 0.2s ease;
+  align-items: center;
+}
+
+#addCardModal button:hover {
+  background: #555;
+}
+
+.dashboard-page .floating-add-btn,
+.dashboard-page .trash-zone,
+.calendar-page .floating-add-btn,
+.calendar-page .trash-zone {
   display: none !important;
+}
+
+/*달력 마감일 표시*/
+.deadline-indicator {
+  height: 5px;
+  background-color: #dc665b;
+  margin-top: 4px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+
+  width: 70%;          /* 길이 축소 */
+  margin-left: auto;   /* 좌우 가운데 정렬 */
+  margin-right: auto;
+}
+
+/*검색 기능 하이라이트 표시*/
+.highlight {
+  color: red;
+  font-weight: bold;
+}
+
+.card .deadline.red-small {
+  font-size: 12px;
+  color: red;
+  margin-top: 8px;
 }
