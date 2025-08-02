@@ -8,6 +8,8 @@ import { formatDate } from './utils.js';
 export function getUpcomingTasks(tasks, baseDateStr = null, maxDay = 3) {
   const today = baseDateStr ? new Date(baseDateStr) : new Date();
 
+  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
   return tasks
     .filter(task =>
       // 'deadline: true' 조건을 제거하여, 마감일(dueDate)이 있는 모든 할 일을 대상으로 합니다.
@@ -16,7 +18,8 @@ export function getUpcomingTasks(tasks, baseDateStr = null, maxDay = 3) {
     )
     .map(task => {
       const dueDate = new Date(task.dueDate);
-      const diff = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));
+      const dueDateObj = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+      const diff = Math.floor((dueDateObj - todayDate) / (1000 * 60 * 60 * 24));
       return { ...task, dDay: diff };
     })
     .filter(task => task.dDay <= maxDay) // 마감일이 지났거나 3일 이내인 모든 항목
